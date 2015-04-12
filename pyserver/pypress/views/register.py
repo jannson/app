@@ -21,7 +21,8 @@ class Register(RequestHandler):
     def post(self):
         form = self.forms.RegisterForm(self.request.arguments)
         if form.validate():
-            print form.data
+            data = form.data
+            print data
             #print form.errors
 
-        self.render("toway/register.html", form=form)
+        self.render("toway/register.html", data=data)
