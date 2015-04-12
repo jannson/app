@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>注册 | 突围俱乐部</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    	<script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-1.10.2.min.js') }}"></script>
+
+        <!-- Bootstrap -->
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/bootstrap-3.2.0/css/bootstrap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/boilerplate.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/normalize.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/all.css')}}">
+
+    	<script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/vendor/modernizr-2.6.2.min.js') }}"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <header class="navbar navbar-fixed-top navbar-default mba-nav " style="margin-bottom:0px;" role="navigation">
+            <div class="container">
+                        <div class="navbar-header" style="margin-top:8px;">
+                             <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse" data-target="#mba-navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                              </button>
+                          <a class="navbar-brand" style="margin-right:15px;" href="/"><img src="fanstatic/mba/img/logo.png" alt="突围俱乐部"/></a>
+
+                        </div>
+
+                        <div class="collapse navbar-collapse" id="mba-navbar-collapse">
+                          
+
+                            <form class="form-inline nav navbar-nav navbar-right" role="form" method="post" action="/login">
+
+                              <div class="form-group">
+                                  <label class="sr-only" for="username">Password</label>
+                                  <input class="form-control" type="text" id="username" name="email_or_username" placeholder="用户名或邮箱" >
+                              </div>
+
+                              <div class="form-group">
+                                <label class="sr-only" for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                              </div>
+
+                              <input type="submit" class="btn btn-primary" name="submit" value="登录">
+                                <a href="/iforgot" class="navbar-iforgot">
+                                  忘记密码
+                                </a>
+                            </form>
+                          
+                    </div><!--/.nav-collapse -->
+
+
+            </div>
+        </header>
+
+
+
+
+
+
+
+
+         <div class="mba-margin-top">
+
+            <div class="container ">
+                <div class="row">
+
+
+
+                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2" id="">
+
+
+                        <div id="messages" class="">
+    
+                    
+    
+                    
+    
+                    
+    
+                    
+    
+                    
+      
+</div>
+                        <form
+id="deform"
+action=""
+method="POST"
+enctype="multipart/form-data"
+accept-charset="utf-8"
+
+ class="deform mba-form"
+
+>
+    <INPUT TYPE="HIDDEN" NAME="_CHARSET_" />
+    <input type="hidden" name="__formid__" value="deform"/>
+
+
+    <div class="header">
+        
+        <li class="section title first">
+            <h3>加入友汇网-注册帐户</h3>
+        </li>
+
+        
+    </div>
+
+
+
+    <div class="body">
+
+            
+                <li class="section desc">
+                <a href='/login'>已有帐号？直接登陆</a>
+                </li>
+            
+
+
+        
+<div class="form-group">
+    <div
+      class="clearfix"
+      title="邀请码"
+    id="item-deformField1">
+  <label class="desc "
+      title="邀请码"
+    for="deformField1">
+    邀请码
+        <span class="req" id="req-deformField1">*</span>
+    </label>
+<div class="input "  >
+  <input
+ type="text"
+        class="form-control" name="invitationcode" value=""
+    class="textInput"
+ id="deformField1"/>
+</div>
+    </div>
+</div>
+        
+            <div class="form-group">
+                
+    <div
+    
+      class="clearfix"
+    
+    
+      title="您的真实姓名"
+    
+
+    id="item-deformField2">
+
+<!-- mapping_item -->
+
+  <label class="desc "
+
+    
+      title="您的真实姓名"
+    
+    for="deformField2">
+    真实姓名
+    
+        <span class="req" id="req-deformField2">*</span>
+    
+    </label>
+
+<div class="input "  >
+  <input
+
+ type="text"
+
+        class="form-control" name="real_name" value=""
+
+
+    class="textInput"
+
+
+ id="deformField2"/>
+
+
+
+
+  
+</div>
+  <!-- /mapping_item -->
+
+    </div>
+
+            </div>
+        
+            <div class="form-group">
+                
+    <div
+    
+      class="clearfix"
+    
+    
+
+    id="item-deformField3">
+
+<!-- mapping_item -->
+
+  <label class="desc "
+
+    
+    for="deformField3">
+    密码
+    
+        <span class="req" id="req-deformField3">*</span>
+    
+    </label>
+
+<div class="input "  >
+  <input type="password" name="password" value=""
+
+
+    class="form-control textInput"
+
+id="deformField3"/>
+
+
+  
+</div>
+  <!-- /mapping_item -->
+
+    </div>
+
+            </div>
+        
+            <div class="form-group">
+                
+    <div
+    
+      class="clearfix"
+    
+    
+
+    id="item-deformField4">
+
+<!-- mapping_item -->
+
+  <label class="desc "
+
+    
+    for="deformField4">
+    手机
+    
+        <span class="req" id="req-deformField4">*</span>
+    
+    </label>
+
+<div class="input "  >
+  <input
+
+ type="text"
+
+        class="form-control" name="phone" value=""
+
+
+    class="textInput"
+
+
+ id="deformField4"/>
+
+
+
+
+  
+</div>
+  <!-- /mapping_item -->
+
+    </div>
+
+            </div>
+        
+            <div class="form-group">
+                
+    <div
+    
+      class="clearfix"
+    
+    
+
+    id="item-deformField5">
+
+<!-- mapping_item -->
+
+  <label class="desc "
+
+    
+    for="deformField5">
+    验证码
+    
+        <span class="req" id="req-deformField5">*</span>
+    
+    </label>
+
+<div class="input "  >
+  <div class="input-group">
+
+
+<input type="text"  name="sms_validate_code" value=""
+
+
+    class="textInput form-control"
+
+ id="deformField5"/>
+
+<span class="input-group-btn">
+    <button class="btn  btn-default" id="deformField5-sms">发送验证码</button>
+</span>
+
+</div>
+    <span id="waittoresend" style="display: none">等待<span id="secwait">60</span>秒再发送...</span>
+    <span id="testhint" style="display: none"></span>
+
+
+<script type="text/javascript">
+  deform.addCallback(
+     'deformField5',
+     function (oid) {
+
+
+         function timewaittoresend(){
+            var secleft = parseInt($("#secwait").text());
+             if( secleft == 0){
+                 secleft = 60;
+                 $("#waittoresend").hide();
+                 $("#" + oid  + "-sms").removeAttr('disabled');
+             }else{
+                 secleft  -= 1;
+             }
+             $("#secwait").text(secleft);
+             setTimeout(timewaittoresend, 1000);
+         }
+        $("#" + oid  + "-sms").click(function(e){
+
+
+            var  phone = $("input[name='phone']").val().trim();
+
+
+
+            if( phone.length != 11){
+                alert("手机格式不合法");
+                return false;
+            }
+            $.post("/api/sendsms", {type: "0", phone: phone}, function(ret){
+
+
+
+                if( ret.errcode == ret.SUCCESS ){
+
+                    if( typeof(ret.retval) == 'object' && ret.retval.istest != 'undefined' ){
+                        $("#testhint").html("测试阶段，请填入验证码:"+ret.retval.code).show();
+
+                    }else {
+
+                        $("#waittoresend").show();
+                        $("#" + oid + "-sms").attr('disabled','disabled');
+                        setTimeout(timewaittoresend, 1000);
+                    }
+
+                }else{
+                    alert("发送失败:"+ ret.errmsg);
+                }
+            });
+            return false;
+        });
+     });
+</script>
+
+
+
+  
+</div>
+  <!-- /mapping_item -->
+
+    </div>
+
+            </div>
+        
+
+    
+        
+
+
+        
+            <button
+                id="deformregister"
+                name="register"
+                type="submit"
+                class="btn btn-default
+                    
+                        btn-primary
+                    
+                "
+                value="register"
+                
+                >
+            <span>注册</span>
+            </button>
+        
+
+    </div>
+
+
+
+</form>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+<div class="index-footer" style="background-color:#052754;color:#A7B2BA;height:auto">
+                <hr/>
+                <div class="row index-partner">
+
+                    <div class="rows" style="margin:0px auto;text-align:center">
+                        <span style=""font-size="14px"><b>合作伙伴：</b></span>
+						    <ul class="inline">  
+							  <li style="display:inline-block">腾讯科技</li>
+							</ul>  
+						<p>
+						<ul class="inline">  
+							  <li style="display:inline-block">关于突围俱乐部</li>
+							  <li style="display:inline-block">联系方式</li>
+							  <li style="display:inline-block">对外合作</li>
+							  <li style="display:inline-block">招贤纳士</li>
+							 
+							  
+							</ul>  
+						</p>
+						<p><span class="bottom_page_link">copyright2013-2014 志友汇</span>
+					</div>
+                </div>
+            </div>
+
+
+
+
+        <!-- this file confict with the jquery(version1.7 that deform used:
+         <script src="fanstatic/mba/js/vendor/jquery-1.10.2.min.js"></script>-->
+
+        <!--
+        <script type="text/javascript" src="fanstatic/mba/js/vendor/jquery.pjax.js"></script>
+        -->
+        <!-- Bootstrap -->
+        <script src="fanstatic/mba/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+        <script src="fanstatic/mba/js/plugins.js"></script>
+        <script src="fanstatic/mba/js/main.js"></script>
+        <script src="fanstatic/mba/js/bootstrap-tooltip.js"></script>
+
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID.
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script> -->
+
+    </body>
+</html>

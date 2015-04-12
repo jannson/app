@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>{% block title %}{% end %} | 突围俱乐部</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    	<script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-1.10.2.min.js') }}"></script>
+
+        <!-- Bootstrap -->
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/bootstrap-3.2.0/css/bootstrap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/boilerplate.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/normalize.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{reverse_url('theme_static','toway/css/all.css')}}">
+    	{% block css %}{% end %}
+
+    	<script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/vendor/modernizr-2.6.2.min.js') }}"></script>
+    	{% block js %}{% end %}
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <header class="navbar navbar-fixed-top navbar-default mba-nav " style="margin-bottom:0px;" role="navigation">
+            <div class="container">
+                        <div class="navbar-header" style="margin-top:8px;">
+                             <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse" data-target="#mba-navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                              </button>
+                          <a class="navbar-brand" style="margin-right:15px;" href="/"><img src="{{ reverse_url('theme_static','toway/logo.jpg') }}" alt="突围俱乐部"/></a>
+                        </div>
+
+                        <div class="collapse navbar-collapse" id="mba-navbar-collapse">
+				{% block header_form %}{% end %}
+                    	</div><!--/.nav-collapse -->
+
+            </div>
+        </header>
+
+         <div class="mba-margin-top">
+
+            <div class="container ">
+                <div class="row">
+
+    {% set messages = handler.get_flashed_messages() %}
+    {% if messages %}
+                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2" id="flashed">
+        {% for category, msg in messages %}
+        <span class="flash-{{ category }}">{{ msg }}</span>
+        {% end %}
+    </div>
+    {% end %}
+
+    {% block content %}{% end %}
+                    </div>
+                </div>
+            </div>
+
+	<div class="index-footer" style="background-color:#052754;color:#A7B2BA;height:auto">
+                <hr/>
+                <div class="row index-partner">
+
+                    <div class="rows" style="margin:0px auto;text-align:center">
+                        <span style=""font-size="14px"><b>合作伙伴：</b></span>
+			<ul class="inline">  
+				<li style="display:inline-block">腾讯科技</li>
+			</ul>  
+			<p>
+			<ul class="inline">  
+				  <li style="display:inline-block">关于突围俱乐部</li>
+				  <li style="display:inline-block">联系方式</li>
+				  <li style="display:inline-block">对外合作</li>
+				  <li style="display:inline-block">招贤纳士</li>
+				 
+				  
+			</ul>  
+			</p>
+			<p><span class="bottom_page_link">copyright2013-2014 突围俱乐部</span></p>
+		   </div>
+
+                </div>
+            </div>
+
+        <!-- this file confict with the jquery(version1.7 that deform used:
+         <script src="fanstatic/mba/js/vendor/jquery-1.10.2.min.js"></script>-->
+
+        <!--
+        <script type="text/javascript" src="fanstatic/mba/js/vendor/jquery.pjax.js"></script>
+        -->
+        <!-- Bootstrap -->
+        <script src="fanstatic/mba/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+        <script src="fanstatic/mba/js/plugins.js"></script>
+        <script src="fanstatic/mba/js/main.js"></script>
+        <script src="fanstatic/mba/js/bootstrap-tooltip.js"></script>
+
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID.
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script> -->
+
+    </body>
+</html>

@@ -1,0 +1,90 @@
+{% extends "../toway_base.html" %}
+{% block title %}注册新用户{% end %}
+
+{% block header_form %}
+<form class="form-inline nav navbar-nav navbar-right" role="form" method="post" action="/login">
+
+<div class="form-group">
+  <label class="sr-only" for="username">Password</label>
+  <input class="form-control" type="text" id="username" name="email_or_username" placeholder="用户名或邮箱" >
+</div>
+
+<div class="form-group">
+<label class="sr-only" for="password">Password</label>
+<input type="password" class="form-control" id="password" name="password" placeholder="密码">
+</div>
+
+<input type="submit" class="btn btn-primary" name="submit" value="登录">
+<a href="/iforgot" class="navbar-iforgot">
+  忘记密码
+</a>
+</form>
+{% end %}
+
+{% block content %}
+        {% from pypress.filters import field_errors %}
+<form action="/register" method="POST" class="mba-form">
+    <div class="header">
+        <li class="section title first">
+            <h3>加入突围-注册帐户</h3>
+        </li>
+    </div>
+            {{ xsrf_form_html() }}
+            {{ form.hidden_tag() }}
+	<div class="body">
+                <li class="section desc">
+                <a href='/login'>已有帐号？直接登陆</a>
+                </li>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="手机号" for="mobile">手机号<span class="req">*</span> </label>
+	<div class="input">
+		<input type="text" class="form-control" name="mobile" value="" class="textInput" id="mobile"/>
+	</div>
+                {{ field_errors(form.mobile) }}
+    </div>
+</div>
+        
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc" title="您的用户名" for="username">用户名<span class="req">*</span></label>
+		<div class="input">
+			<input type="text" class="form-control" name="username" value="" class="textInput" id="username"/>
+		</div>
+                {{ field_errors(form.username) }}
+    </div>
+</div>
+        
+<div class="form-group">
+    <div class="clearfix" id="item-deformField3">
+	    <label class="desc" for="deformField3">密码<span class="req" id="req-deformField3">*</span></label>
+	    <div class="input">
+		    <input type="password" name="password" value="" class="form-control textInput" id="password"/>
+	    </div>
+                {{ field_errors(form.password) }}
+    </div>
+</div>
+        
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc " for="code">验证码<span class="req" id="req-deformField5">*</span></label>
+		<div class="input">
+			<div class="input-group"><input type="text"  name="code" value="" class="textInput form-control" id="code"/>
+				<span class="input-group-btn">
+					<button class="btn  btn-default" id="code-sms">发送验证码</button>
+				</span>
+			</div>
+	    <span id="waittoresend" style="display: none">等待<span id="secwait">60</span>秒再发送...</span>
+	    <span id="testhint" style="display: none"></span>
+                {{ field_errors(form.code) }}
+	</div>
+</div>
+
+        <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
+		    <span>注册</span>
+            </button>
+
+    	</div>
+    </form>
+{% end %}
