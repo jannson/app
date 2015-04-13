@@ -16,6 +16,7 @@ from pypress.extensions.routing import route
 class Register(RequestHandler):
     def get(self):
         form = self.forms.RegisterForm(next=self.get_args('next'))
+        print form.mobile.data
         self.render('toway/register.html', form=form)
 
     def post(self):
@@ -25,4 +26,4 @@ class Register(RequestHandler):
             print data
             #print form.errors
 
-        self.render("toway/register.html", data=data)
+        self.render("toway/register.html", form=form)

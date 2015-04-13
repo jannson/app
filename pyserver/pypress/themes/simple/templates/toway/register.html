@@ -40,7 +40,7 @@
     <div class="clearfix">
 	<label class="desc" title="手机号" for="mobile">手机号<span class="req">*</span> </label>
 	<div class="input">
-		<input type="text" class="form-control" name="mobile" value="{{data['mobile']}}" class="textInput" id="mobile"/>
+		<input type="text" class="form-control" name="mobile" value="{{form.mobile.data}}" class="textInput" id="mobile"/>
 	</div>
                 {{ field_errors(form.mobile) }}
     </div>
@@ -50,7 +50,7 @@
 	<div class="clearfix">
 		<label class="desc" title="您的用户名" for="username">用户名<span class="req">*</span></label>
 		<div class="input">
-			<input type="text" class="form-control" name="username" value="" class="textInput" id="username"/>
+            <input type="text" class="form-control" name="username" value="{{form.username.data}}" class="textInput" id="username"/>
 		</div>
                 {{ field_errors(form.username) }}
     </div>

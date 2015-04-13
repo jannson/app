@@ -15,17 +15,17 @@ MOBILE_RE = r'^\d+$'
 
 
 def create_forms():
-    
+
     _forms = {}
-    
+
     for locale in tornado.locale.get_supported_locales():
 
         _ = tornado.locale.get(locale).translate
         #logging.info('create forms: %s' % locale)
-    
-        is_username = regexp(USERNAME_RE, 
+
+        is_username = regexp(USERNAME_RE,
                              message=_("You can only use letters, numbers or dashes"))
-        is_mobile = regexp(MOBILE_RE, 
+        is_mobile = regexp(MOBILE_RE,
                              message=u"只能填入手机号")
 
         class FormWrapper(object):
@@ -43,10 +43,10 @@ def create_forms():
 
                 submit = SubmitField(_("Login"))
 
-            
+
             class SignupForm(Form):
                 username = TextField(_("Username"), validators=[
-                                     required(message=_("Username required")), 
+                                     required(message=_("Username required")),
                                      is_username])
 
                 nickname = TextField(_("Nickname"), validators=[
@@ -60,7 +60,7 @@ def create_forms():
                                                         _("Passwords don't match"))])
 
                 email = TextField(_("Email"), validators=[
-                                  required(message=_("Email required")), 
+                                  required(message=_("Email required")),
                                   email(message=_("A valid email is required"))])
 
                 code = TextField(_("Signup Code"))
@@ -93,7 +93,7 @@ def create_forms():
 
                 password = PasswordField(_("New Password"), validators=[
                                          required(message=_("New Password is required"))])
-                
+
                 password_again = PasswordField(_("Password again"), validators=[
                                                equal_to("password", message=\
                                                         _("Passwords don't match"))])
@@ -106,7 +106,7 @@ def create_forms():
 
                 submit = SubmitField(_("Delete"))
 
-            
+
             class PostForm(Form):
                 title = TextField(_("Title"), validators=[
                                   required(message=_("Title required"))])
@@ -139,14 +139,14 @@ def create_forms():
                 email = TextField(_("Email"), validators=[
                                   required(message=_("Email required")),
                                   email(message=_("A valid email is required"))])
-                
+
                 nickname = TextField(_("Nickname"), validators=[
                                   required(message=_("Nickname required"))])
-                
+
                 website = TextField(_("Website"), validators=[
                                     optional(),
                                     url(message=_("A valid url is required"))])
-                
+
                 comment = TextAreaField(_("Comment"), validators=[
                                         required(message=_("Comment required"))])
 
@@ -160,38 +160,38 @@ def create_forms():
             class LinkForm(Form):
                 name = TextField(_("Site name"), validators=[
                                   required(message=_("Site name required"))])
-                
+
                 link = TextField(_("link"), validators=[
                                 url(message=_("A valid url is required"))])
-                
+
                 email = TextField(_("Email"), validators=[
                                 email(message=_("A valid email is required"))])
-                
+
                 logo = TextField(_("Logo"), validators=[
                                 optional(),
                                 url(message=_("A valid url is required"))])
-                
+
                 description = TextAreaField(_("Description"))
 
                 submit = SubmitField(_("Save"))
 
             class RegisterForm(Form):
                 mobile = TextField(_("Mobile"), validators=[
-                                     required(message=_("Mobile required")), 
-                                     is_mobile])
+                                     required(message=_("Mobile required")),
+                                     is_mobile], default=u"")
 
                 username = TextField(_("Username"), validators=[
-                                     required(message=_("Username required")), 
-                                     is_username])
+                                     required(message=_("Username required")),
+                                     is_username], default=u"")
 
                 password = PasswordField(_("Password"), validators=[
-                                         required(message=_("Password required"))])
+                                         required(message=_("Password required"))], default=u"")
 
-                code = TextField(_("Code"))
+                code = TextField(_("Code"), default=u"")
 
-                next = HiddenField()
+                next = HiddenField(default=u"")
 
-                submit = SubmitField(_("Register"))
+                submit = SubmitField(_("Register"), default=u"")
 
         _forms[locale] = FormWrapper
 
