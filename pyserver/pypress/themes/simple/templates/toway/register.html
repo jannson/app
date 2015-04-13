@@ -75,8 +75,7 @@
 					<button class="btn  btn-default" id="code-sms">发送验证码</button>
 				</span>
 			</div>
-	    <span id="waittoresend" style="display: none">等待<span id="secwait">60</span>秒再发送...</span>
-	    <span id="testhint" style="display: none"></span>
+	    <span id="waittoresend" style="display:none">等待<span id="secwait">60</span>秒再发送...</span>
                 {{ field_errors(form.code) }}
 	</div>
 </div>
@@ -86,5 +85,43 @@
             </button>
 
     	</div>
+	<script>
+         function timewaittoresend(){
+            var secleft = parseInt($("#secwait").text());
+             if( secleft == 0){
+                 secleft = 60;
+                 $("#waittoresend").hide();
+                 $("#code-sms").removeAttr('disabled');
+             } else {
+                 secleft  -= 1;
+             }
+             $("#secwait").text(secleft);
+             setTimeout(timewaittoresend, 1000);
+         }
+	//$.ajaxSetup({
+	//	headers: {'X-Requested-With': 'XMLHttpRequest'}
+	//});
+	$.ajaxSetup({
+	    beforeSend: function(jqXHR, settings) {
+		type = settings.type
+		if (type != 'GET' && type != 'HEAD' && type != 'OPTIONS') {
+		    var pattern = /(.+; *)?_xsrf *= *([^;" ]+)/;
+		    var xsrf = pattern.exec(document.cookie);
+		    if (xsrf) {
+			jqXHR.setRequestHeader('X-XSRFToken', xsrf[2]);
+		    }
+		}
+	}});
+	$("#code-sms").click(function(e) {
+		$("#waittoresend").show();
+		$("#code-sms").attr('disabled','disabled');
+
+            	$.post("/api/sms_send", {type: "0", phone: "12345678901"}, function(ret){
+			console.log(ret);
+		});
+                setTimeout(timewaittoresend, 1000);
+	});
+
+	</script>
     </form>
 {% end %}
