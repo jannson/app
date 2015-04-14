@@ -24,7 +24,7 @@ __all__ = ['User', 'UserCode', 'Tweet', ]
 class UserQuery(BaseQuery):
 
     def authenticate(self, login, password):
-        
+
         user = self.filter(db.or_(User.username==login,
                                   User.email==login)).first()
 
@@ -51,17 +51,19 @@ class UserQuery(BaseQuery):
 class User(db.Model):
 
     __tablename__ = 'users'
-    
+
     query_class = UserQuery
 
     PER_PAGE = 50
     TWEET_PER_PAGE = 30
-    
+
     MEMBER = 100
     MODERATOR = 200
     ADMIN = 300
-    
+
     id = db.Column(db.Integer, primary_key=True)
+    #1:Shenzhen
+    city_id = db.Column('city_id', db.Integer, db.ForeignKey('city.id'), default=1)
     username = db.Column(db.String(20), unique=True)
     nickname = db.Column(db.String(20))
     email = db.Column(db.String(100), unique=True, nullable=True)
@@ -74,28 +76,28 @@ class User(db.Model):
     block = db.Column(db.Boolean, default=False)
 
     class Permissions(object):
-        
+
         def __init__(self, obj):
             self.obj = obj
 
         @cached_property
         def edit(self):
             return Permission(UserNeed(self.obj.id)) & admin
-  
-  
+
+
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return "User: %s" % self.nickname
-    
+
     def __repr__(self):
         return "<%s>" % self
-    
+
     @cached_property
     def permissions(self):
         return self.Permissions(self)
-    
+
     @cached_property
     def provides(self):
         needs = [RoleNeed('authenticated'),
@@ -108,22 +110,22 @@ class User(db.Model):
             needs.append(RoleNeed('admin'))
 
         return needs
-    
+
     def _get_password(self):
         return self._password
-    
+
     def _set_password(self, password):
         self._password = hashlib.md5(password).hexdigest()
-    
-    password = db.synonym("_password", 
+
+    password = db.synonym("_password",
                           descriptor=property(_get_password,
                                               _set_password))
 
     def check_password(self,password):
         if self.password is None:
-            return False        
+            return False
         return self.password == hashlib.md5(password).hexdigest()
-    
+
     @property
     def is_moderator(self):
         return self.role >= self.MODERATOR
@@ -146,17 +148,17 @@ class User(db.Model):
 class UserCode(db.Model):
 
     __tablename__ = 'usercode'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), nullable=False)
     role = db.Column(db.Integer, default=User.MEMBER)
-    
+
     def __init__(self, *args, **kwargs):
         super(UserCode, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return self.code
-    
+
     def __repr__(self):
         return "<%s>" % self
 
@@ -164,24 +166,24 @@ class UserCode(db.Model):
 class Tweet(db.Model):
 
     __tablename__ = 'tweets'
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
-    user_id = db.Column(db.Integer, 
-                        db.ForeignKey(User.id, ondelete='CASCADE'), 
+
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey(User.id, ondelete='CASCADE'),
                         nullable=False,
                         unique=True)
-    
+
     server = db.Column(db.String(50))
     token = db.Column(db.String(50))
     token_secret = db.Column(db.String(50))
-    
+
     def __init__(self, *args, **kwargs):
         super(Tweet, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return "Tweet: %s" % self.id
-    
+
     def __repr__(self):
         return "<%s>" % self
 

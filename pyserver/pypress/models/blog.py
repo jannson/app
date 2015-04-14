@@ -10,6 +10,7 @@ import re, random
 from datetime import datetime
 
 import tornado.web
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from pypress.extensions.sqlalchemy import BaseQuery
 from pypress.extensions.cache import cached_property, cache
@@ -20,8 +21,7 @@ from pypress.permissions import admin, moderator
 from pypress.database import db
 from pypress.models.users import User
 
-
-__all__ = ['Post', 'Tag', 'Comment']
+__all__ = ['Post', 'Tag', 'Comment', 'Act', 'City']
 
 
 class PostQuery(BaseQuery):
@@ -35,7 +35,7 @@ class PostQuery(BaseQuery):
         Return restricted list of columns for list queries
         """
 
-        deferred_cols = ("content", 
+        deferred_cols = ("content",
                          "tags",
                          "author.email",
                          "author.activation_key",
@@ -44,13 +44,13 @@ class PostQuery(BaseQuery):
 
         options = [db.defer(col) for col in deferred_cols]
         return self.options(*options)
-    
+
     def get_by_slug(self, slug):
         post = self.filter(Post.slug==slug).first()
         if post is None:
             raise tornado.web.HTTPError(404)
         return post
-    
+
     def search(self, keywords):
 
         criteria = []
@@ -68,12 +68,12 @@ class PostQuery(BaseQuery):
     def archive(self, year, month, day):
         if not year:
             return self
-        
+
         criteria = []
         criteria.append(db.extract('year',Post.created_date)==int(year))
         if month: criteria.append(db.extract('month',Post.created_date)==int(month))
         if day: criteria.append(db.extract('day',Post.created_date)==int(day))
-        
+
         q = reduce(db.and_, criteria)
         return self.filter(q)
 
@@ -82,51 +82,52 @@ class Post(db.Model):
 
     __tablename__ = 'posts'
 
-    PER_PAGE = 40    
-    
+    PER_PAGE = 40
+
     query_class = PostQuery
-    
+
     id = db.Column(db.Integer, primary_key=True)
 
-    author_id = db.Column(db.Integer, 
-                          db.ForeignKey(User.id, ondelete='CASCADE'), 
+    author_id = db.Column(db.Integer,
+                          db.ForeignKey(User.id, ondelete='CASCADE'),
                           nullable=False)
-    
+
     _title = db.Column("title", db.Unicode(100), index=True)
     _slug = db.Column("slug", db.Unicode(50), unique=True, index=True)
     content = db.Column(db.UnicodeText)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     update_time = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    post_type = db.Column(db.String(32), nullable=False)
 
     _tags = db.Column("tags", db.Unicode(100), index=True)
 
     author = db.relation(User, innerjoin=True, lazy="joined")
 
-    __mapper_args__ = {'order_by': id.desc()}
-        
+    __mapper_args__ = {'order_by': id.desc(), 'polymorphic_on': post_type}
+
     class Permissions(object):
-        
+
         def __init__(self, obj):
             self.obj = obj
-        
+
         @cached_property
         def edit(self):
             return Permission(UserNeed(self.obj.author_id))
-    
+
         @cached_property
         def delete(self):
             return Permission(UserNeed(self.obj.author_id))
 
-  
+
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
 
     def __str__(self):
         return self.title
-    
+
     def __repr__(self):
         return "<%s>" % self
-    
+
     @cached_property
     def permissions(self):
         return self.Permissions(self)
@@ -140,7 +141,7 @@ class Post(db.Model):
             self.slug = slugify(title)[:50]
 
     title = db.synonym("_title", descriptor=property(_get_title, _set_title))
-    
+
     def _get_slug(self):
         return self._slug
 
@@ -149,12 +150,12 @@ class Post(db.Model):
             self._slug = slugify(slug)
 
     slug = db.synonym("_slug", descriptor=property(_get_slug, _set_slug))
-    
+
     def _get_tags(self):
-        return self._tags 
+        return self._tags
 
     def _set_tags(self, tags):
-        
+
         self._tags = tags
 
         if self.id:
@@ -170,15 +171,15 @@ class Post(db.Model):
             if tag_obj is None:
                 tag_obj = Tag(name=tag, slug=slug)
                 db.session.add(tag_obj)
-            
+
             tag_obj.posts.append(self)
 
     tags = db.synonym("_tags", descriptor=property(_get_tags, _set_tags))
-    
+
     @cached_property
     def url(self):
         return route.url_for('post_view',
-                    self.created_date.year, 
+                    self.created_date.year,
                     self.created_date.month,
                     self.created_date.day,
                     self.slug.encode('utf8'))
@@ -195,7 +196,7 @@ class Post(db.Model):
     def linked_taglist(self):
         return [(tag, route.url_for('tag', slugify(tag))) \
                     for tag in self.taglist]
-    
+
     @cached_property
     def prev_post(self):
         prev_post = Post.query.filter(Post.created_date < self.created_date) \
@@ -215,17 +216,17 @@ class Post(db.Model):
             return self.content
         p = s[0]
         return endtags(self.content.split(p)[0])
-    
+
     @property
     def comments(self):
         """
-        Returns comments in tree. Each parent comment has a "comments" 
+        Returns comments in tree. Each parent comment has a "comments"
         attribute appended and a "depth" attribute.
         """
         comments = Comment.query.filter(Comment.post_id==self.id).all()
 
         def _get_comments(parent, depth):
-            
+
             parent.comments = []
             parent.depth = depth
 
@@ -247,19 +248,19 @@ class Post(db.Model):
                     title=self.title,
                     content=self.content,
                     author=self.author.username)
-     
+
 
 post_tags = db.Table("post_tags", db.Model.metadata,
-    db.Column("post_id", db.Integer, 
-              db.ForeignKey('posts.id', ondelete='CASCADE'), 
+    db.Column("post_id", db.Integer,
+              db.ForeignKey('posts.id', ondelete='CASCADE'),
               primary_key=True),
-    db.Column("tag_id", db.Integer, 
+    db.Column("tag_id", db.Integer,
               db.ForeignKey('tags.id', ondelete='CASCADE'),
               primary_key=True))
 
 
 class TagQuery(BaseQuery):
-    
+
     @cache.cached(3600)
     def cloud(self):
 
@@ -277,18 +278,18 @@ class TagQuery(BaseQuery):
 
         for tag in tags:
             tag.size = int(tag.num_posts / diff)
-            if tag.size < 1: 
+            if tag.size < 1:
                 tag.size = 1
 
         random.shuffle(tags)
 
         return tags
-    
+
 
 class Tag(db.Model):
 
     __tablename__ = "tags"
-    
+
     query_class = TagQuery
 
     id = db.Column(db.Integer, primary_key=True)
@@ -296,16 +297,16 @@ class Tag(db.Model):
     posts = db.dynamic_loader(Post, secondary=post_tags, query_class=PostQuery)
 
     _name = db.Column("name", db.Unicode(80), unique=True)
-    
+
     def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
-    
+
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return "<%s>" % self
-    
+
     def _get_name(self):
         return self._name
 
@@ -314,7 +315,7 @@ class Tag(db.Model):
         self.slug = slugify(name)
 
     name = db.synonym("_name", descriptor=property(_get_name, _set_name))
-    
+
     @cached_property
     def url(self):
         return route.url_for('tag', self.slug)
@@ -335,28 +336,28 @@ class CommentQuery(BaseQuery):
                      }) for comment in self.all()]
 
         return comments
-    
+
 
 class Comment(db.Model):
 
     __tablename__ = "comments"
-    
+
     query_class = CommentQuery
 
-    PER_PAGE = 40    
-    
+    PER_PAGE = 40
+
     id = db.Column(db.Integer, primary_key=True)
 
-    post_id = db.Column(db.Integer, 
-                        db.ForeignKey(Post.id, ondelete='CASCADE'), 
+    post_id = db.Column(db.Integer,
+                        db.ForeignKey(Post.id, ondelete='CASCADE'),
                         nullable=False)
 
-    author_id = db.Column(db.Integer, 
-                          db.ForeignKey(User.id, ondelete='CASCADE')) 
+    author_id = db.Column(db.Integer,
+                          db.ForeignKey(User.id, ondelete='CASCADE'))
 
-    parent_id = db.Column(db.Integer, 
+    parent_id = db.Column(db.Integer,
                           db.ForeignKey("comments.id", ondelete='CASCADE'))
-    
+
     email = db.Column(db.String(50))
     nickname = db.Column(db.Unicode(50))
     website = db.Column(db.String(100))
@@ -373,17 +374,17 @@ class Comment(db.Model):
     parent = db.relation('Comment', lazy="joined", remote_side=[id])
 
     __mapper_args__ = {'order_by' : id.asc()}
-    
-    
+
+
     class Permissions(object):
-        
+
         def __init__(self, obj):
             self.obj = obj
-        
+
         @cached_property
         def edit(self):
             return Permission(UserNeed(self.obj.author_id))
-    
+
         @cached_property
         def reply(self):
             return Permission(UserNeed(self.obj.post.author_id))
@@ -392,33 +393,33 @@ class Comment(db.Model):
         def delete(self):
             return admin & moderator
 
-        
+
     def __init__(self, *args, **kwargs):
         super(Comment, self).__init__(*args, **kwargs)
-    
+
     def __str__(self):
         return self.comment
-    
+
     def __repr__(self):
         return "<%s>" % self
 
     @cached_property
     def permissions(self):
         return self.Permissions(self)
-    
+
     def _get_author(self):
         if self._author:
             self._author.website = None
             return self._author
-        return storage(email = self.email, 
-                       nickname = self.nickname, 
+        return storage(email = self.email,
+                       nickname = self.nickname,
                        website = self.website)
 
     def _set_author(self, author):
         self._author = author
 
     author = db.synonym("_author", descriptor=property(_get_author, _set_author))
-    
+
     @cached_property
     def url(self):
         return "%s#comment-%s" % (self.post.url, self.id)
@@ -426,7 +427,7 @@ class Comment(db.Model):
     @cached_property
     def markdown(self):
         return markdown(self.comment or '')
-    
+
     @cached_property
     def json(self):
         return dict(id=self.id,
@@ -434,11 +435,54 @@ class Comment(db.Model):
                     url=self.url,
                     comment=self.comment,
                     created_date=self.created_date)
-    
+
     @cached_property
     def item(self):
         return storage(self.json)
-   
+
+class City(db.Model):
+    __tablename__ = 'city'
+    __table_args__ = (
+        db.UniqueConstraint('name'),
+        )
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(50), nullable=False)
+    name_pinyin = db.Column(db.String(50))
+    acts = db.relationship("Act", backref='city', order_by='desc(Act.start_date)')
+    #usercity = db.relationship("Author", backref='city', order_by='desc(MbaUser.creation_date)')
+
+    @classmethod
+    def _find_or_create(cls, name):
+        with DBSession.no_autoflush:
+            obj = DBSession.query(City).filter_by(name=name).first()
+        if obj is None:
+            obj = City(name=name)
+        return obj
+
+class Act(Post):
+    __tablename__ = 'acts'
+    __mapper_args__ = {'polymorphic_identity': ''}
+
+    id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    start_date = db.Column(db.DateTime, default=datetime.utcnow)
+    finish_time = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    limit_num = db.Column(db.Integer(), default=500)
+    pay_count = db.Column(db.Integer(), default=0)
+    location = db.Column(db.UnicodeText())
+
+    [STATUS_PUBLIC, STATUS_DRAFT, STATUS_PRIVATE, STATUS_CANCEL, STATUS_DELETED] = range(5)
+    status = db.Column(db.Integer(), nullable=False, default=STATUS_PUBLIC)
+
+    #经度
+    latitude = db.Column(db.Float())
+    longitude = db.Column(db.Float())
+    zoomlevel = db.Column(db.Integer())
+
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), default=1)
+    city_name = association_proxy('city'
+            , 'name'
+            , creator=City._find_or_create)
 
 Post.num_comments = db.column_property(
             db.select([db.func.count(Comment.post_id)]) \

@@ -7,13 +7,13 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 
-from tornado.options import define, options 
+from tornado.options import define, options
 
 from pypress import Application
 from pypress.models import *
 from pypress.database import db
 
-define("cmd", default='runserver', 
+define("cmd", default='runserver',
         metavar="runserver|createall|dropall|createcode",
         help=("Default use runserver"))
 define("port", default=9000, help="default: 9000, required runserver", type=int)
@@ -32,6 +32,9 @@ def main():
     elif options.cmd == 'createall':
         "Creates database tables"
         db.create_all()
+        city = City(name=u"Shenzhen")
+        db.session.add(city)
+        db.session.commit()
         print 'create all [ok]'
 
     elif options.cmd == 'dropall':
