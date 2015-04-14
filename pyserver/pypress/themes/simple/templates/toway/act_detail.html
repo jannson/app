@@ -1,0 +1,136 @@
+{% extends "../toway_base.html" %}
+{% block title %}注册新用户{% end %}
+
+{% block header_form %}
+<ul class="nav navbar-nav">
+<li id="li_index" class="active"><a href="/">首页</a></li>
+<li  id="li_meetups"><a href="/meetups">活动</a></li>
+</ul>
+{% end %}
+
+{% block content %}
+<div class="col-md-9 meetup-main">
+    <div class="panel panel-default meetup-subject"> 
+
+<div class="panel-body">
+    <div class="col-md-4">
+        <img src="http://photo.toway.me/image/MToxZmZiNDQ0YzE4NmZjMDRlY2VmZjI0NjIzY2U3ZDVhYg" width="100%" height="240px"/>
+    </div> 
+    <div class="col-md-8  main-info">
+        <h2>志友汇第二届年会</h2>
+        <div>分享嘉宾：</div>
+        <div>时间：2015-02-01 14:00 - 19:00</div>
+        <div>地点：深圳音乐厅1楼</div>
+        <div>费用：150元/人</div>
+        <div>人数限制：128人 (128人已报名)</div>
+        <div>报名时间：2015-01-21 02:00 至 01-30 02:00</div>
+        <button class="btn btn-primary disabled">报名人数已满</button>
+    </div>
+</div>
+
+<div>
+    <h3>活动详情</h3>
+    <p class="meetup-details">
+    The detail
+    </p>
+
+    <div class="bdsharebuttonbox" data-tag="share_2" >
+        <a class="bds_qzone" data-cmd="qzone" href="#"></a>
+        <a class="bds_tsina" data-cmd="tsina"></a>
+        <a class="bds_weixin" data-cmd="weixin"></a>
+        <a class="bds_more" data-cmd="more"></a>
+        <a class="bds_count" data-cmd="count"></a>
+    </div> 
+
+</div>
+
+</div>
+</div>
+
+<div class="col-md-3 meetup-rightbar">
+    <h3>活动地图</h3> 
+    <div id="meetup-map" width="100%"> 
+    </div>
+    <br/>
+
+<div class="applicants">
+    <h3>已报名成员(10人)</h3>
+    <hr/>
+    <ul class="users">
+        <li>
+            <a href="/person/" target="_blank">
+                <img title="" alt="" class="navbar-avatar" src=""
+            width="40px" height="40px"/>
+            </a>
+            <div>
+                 <a href="" target="_blank">
+                     Name
+                 </a>
+            </div>
+
+        </li>
+    </ul>
+    <br/>
+    </div>
+
+</div>
+
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+
+<script>
+window._bd_share_config = {
+common : {
+bdText : "我参加了活动志友汇第二届年会，好像挺不错的，小伙伴们一起来吧！",
+bdDesc : '',
+bdUrl : window.location.href,
+bdPic : "http://v-find.com:6543/images/20150122093752_wKCW16YR54/image"
+},
+share: {
+tag: 'share_2',
+bdSize: 16
+},
+viewList: ["tsina","weixin","qzone"],
+viewText: "分享到",
+viewSize: '24'
+};
+with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+<script>
+$(function(){
+var center = new qq.maps.LatLng(22.5474, 114.057);
+var map = new qq.maps.Map(
+$("#meetup-map")[0],
+{
+center: center,
+zoom:{{ 18 }}
+}
+);
+
+
+var marker = new qq.maps.Marker({
+position: center,
+map: map,
+    title: "Shenzhen yinyue"
+    });
+
+        var scaleControl = new qq.maps.ScaleControl({
+            align: qq.maps.ALIGN.BOTTOM_LEFT,
+            margin: qq.maps.Size(20, 10),
+
+            map: map
+        });
+
+            $('#myModal').modal('show');
+
+
+        /*
+        $('.iframe bdshare_popup_bg').show();
+
+        div bdshare_popup_box
+        */
+
+    });
+
+</script>
+{% end %}

@@ -33,3 +33,8 @@ class Register(RequestHandler):
             #print form.errors
 
         self.render("toway/register.html", form=form)
+
+@route(r'/act', name='act')
+class ActDetail(RequestHandler):
+    def get(self):
+        self.render('toway/act_detail.html')
