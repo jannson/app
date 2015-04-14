@@ -32,7 +32,7 @@ def main():
     elif options.cmd == 'createall':
         "Creates database tables"
         db.create_all()
-        city = City(name=u"Shenzhen")
+        city = City(name=u"深圳")
         db.session.add(city)
         db.session.commit()
         print 'create all [ok]'

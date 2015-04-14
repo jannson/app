@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #coding=utf-8
 
+import re
 from datetime import datetime
 
 from pypress.views import RequestHandler
@@ -8,6 +9,8 @@ from pypress.database import db
 from pypress.models import User, UserCode
 from pypress.extensions.routing import route
 from pypress.extensions.sms import sms_privider
+
+mobile_re = re.compile(r'\d{6,20}$')
 
 @route(r'/api/sms_send', name='sms_send')
 class Smssend(RequestHandler):
@@ -17,14 +20,17 @@ class Smssend(RequestHandler):
     #def check_xsrf_cookie():
     #http://www.keakon.net/2012/12/03/Tornado%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C
     def post(self):
-        print 'hear'
-        print self.request.body
+        phone = self.get_argument("phone", default=None)
+        if not phone or not mobile_re.match(phone):
+            self.write("error")
+            return
 
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = self.request.remote_ip if not x_real_ip else x_real_ip
         sms_p = sms_privider(self.application, "test")
-        code = sms_p.gen_code(remote_ip)
+        code = sms_p.gen_code(remote_ip, phone)
         if code:
+            print code
             self.write("ok")
         else:
             self.write("error")

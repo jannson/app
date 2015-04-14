@@ -29,7 +29,26 @@ class Register(RequestHandler):
         form = self.forms.RegisterForm(self.request.arguments)
         if form.validate():
             data = form.data
-            print data
+            sms_p = sms_privider(self.application, "test")
+            if sms_p.check_code(data['mobile'], data['code']):
+                sms_p.delete_code(data['mobile'])
+                user = User(username=data['username'], mobile=data['mobile'], password=data['password'], role=User.MEMBER)
+                user.last_login = datetime.utcnow()
+                db.session.add(user)
+                db.session.commit()
+
+                self.session['user'] = user
+                self.session.save()
+                self.flash(self._("Welcome, %s" % user.username), "success")
+
+                # redirect
+                next_url = form.next.data
+                if not next_url:
+                    next_url = '/'
+                self.redirect(next_url)
+            else:
+                form.submit.errors.append(u"Register error")
+
             #print form.errors
 
         self.render("toway/register.html", form=form)
