@@ -193,6 +193,16 @@ def create_forms():
 
                 submit = SubmitField(_("Register"), default=u"")
 
+                def validate_username(self, field):
+                    user = User.query.filter(User.username.like(field.data)).first()
+                    if user:
+                        raise ValidationError, u"用户名已经存在"
+
+                def validate_mobile(self, field):
+                    user = User.query.filter(User.mobile == field.data).first()
+                    if user:
+                        raise ValidationError, u"手机号已经被注册"
+
         _forms[locale] = FormWrapper
 
     return _forms

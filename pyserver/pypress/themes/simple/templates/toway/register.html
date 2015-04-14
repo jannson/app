@@ -3,10 +3,11 @@
 
 {% block header_form %}
 <form class="form-inline nav navbar-nav navbar-right" role="form" method="post" action="/login">
-
+            {{ xsrf_form_html() }}
+	    <input type="hidden" name="remember" value="0"/>
 <div class="form-group">
-  <label class="sr-only" for="username">Password</label>
-  <input class="form-control" type="text" id="username" name="email_or_username" placeholder="手机号或用户名" >
+  <label class="sr-only" for="login">Password</label>
+  <input class="form-control" type="text" id="login" name="login" placeholder="手机号或用户名" >
 </div>
 
 <div class="form-group">
@@ -80,10 +81,10 @@
 	</div>
 </div>
 
-        <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
         {{ field_errors(form.submit) }}
-		    <span>注册</span>
-            </button>
+        <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
+		<span>注册</span>
+        </button>
 
     	</div>
 	<script>

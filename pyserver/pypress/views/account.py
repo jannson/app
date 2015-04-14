@@ -19,7 +19,7 @@ class Login(RequestHandler):
         
         form = self.forms.LoginForm(next=self.get_args('next'))
 
-        self.render('account/login.html', form=form)
+        self.render('toway/login.html', form=form)
         return
 
     def post(self):
@@ -51,7 +51,7 @@ class Login(RequestHandler):
             else:
                 form.submit.errors.append(self._("The username or password you provided are incorrect."))
         
-        self.render('account/login.html', form=form)
+        self.render('toway/login.html', form=form)
         return
 
 

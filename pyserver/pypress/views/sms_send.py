@@ -21,8 +21,14 @@ class Smssend(RequestHandler):
     #http://www.keakon.net/2012/12/03/Tornado%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C
     def post(self):
         phone = self.get_argument("phone", default=None)
+
         if not phone or not mobile_re.match(phone):
-            self.write("error")
+            self.write("phone_error")
+            return
+
+        user = User.query.filter(User.mobile==phone).first()
+        if user:
+            self.write("phone_exists")
             return
 
         x_real_ip = self.request.headers.get("X-Real-IP")

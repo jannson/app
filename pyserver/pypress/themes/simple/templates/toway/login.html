@@ -1,0 +1,52 @@
+{% extends "../toway_base.html" %}
+{% block title %}用户登录{% end %}
+
+{% block header_form %}
+<a href="/iforgot" class="navbar-iforgot">
+  忘记密码
+</a>
+{% end %}
+
+{% block content %}
+        {% from pypress.filters import field_errors %}
+<form action="/login" method="POST" class="mba-form">
+    <div class="header">
+        <li class="section title first">
+            <h3>加入突围-注册帐户</h3>
+        </li>
+    </div>
+            {{ xsrf_form_html() }}
+            {{ form.hidden_tag() }}
+
+	    <input type="hidden" name="remember" value="1"/>
+
+	<div class="body">
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="用户名或手机号" for="login">用户名或手机号<span class="req">*</span> </label>
+	<div class="input">
+		<input type="text" class="form-control" name="login" value="" class="textInput" id="login"/>
+	</div>
+                {{ field_errors(form.login) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix" id="item-deformField3">
+	    <label class="desc" for="deformField3">密码<span class="req" id="req-deformField3">*</span></label>
+	    <div class="input">
+		    <input type="password" name="password" value="" class="form-control textInput" id="password"/>
+	    </div>
+                {{ field_errors(form.password) }}
+    </div>
+</div>
+
+        {{ field_errors(form.submit) }}
+        <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
+		<span>注册</span>
+        </button>
+
+	</div>
+</form>
+{% end %}

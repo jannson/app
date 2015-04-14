@@ -26,7 +26,7 @@ class UserQuery(BaseQuery):
     def authenticate(self, login, password):
 
         user = self.filter(db.or_(User.username==login,
-                                  User.email==login)).first()
+                                  User.mobile==login)).first()
 
         if user:
             authenticated = user.check_password(password)
@@ -36,7 +36,7 @@ class UserQuery(BaseQuery):
         return user, authenticated
 
     def search(self, key):
-        query = self.filter(db.or_(User.email==key,
+        query = self.filter(db.or_(User.mobile==key,
                                    User.nickname.ilike('%'+key+'%'),
                                    User.username.ilike('%'+key+'%')))
         return query
@@ -139,6 +139,7 @@ class User(db.Model):
         return dict(id=self.id,
                     username=self.username,
                     nickname=self.nickname,
+                    mobile=self.mobile,
                     email=self.email,
                     is_admin=self.is_admin,
                     is_moderator=self.is_moderator,
