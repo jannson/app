@@ -203,6 +203,33 @@ def create_forms():
                     if user:
                         raise ValidationError, u"手机号已经被注册"
 
+            class ActForm(Form):
+                title = TextField(_("Title"), validators=[
+                                  required(message=_("Title required"))])
+
+                slug = TextField(_("Slug"))
+
+                content = TextAreaField(_("Content"), validators=[
+                                        required(message=_("Content required"))])
+
+                tags = TextField(_("Tags"), validators=[
+                                  required(message=_("Tags required"))])
+
+                submit = SubmitField(_("Save"))
+
+                next = HiddenField()
+
+                def validate_slug(self, field):
+                    if len(field.data) > 50:
+                        raise ValidationError, _("Slug must be less than 50 characters")
+                    slug = slugify(field.data) if field.data else slugify(self.title.data)[:50]
+                    posts = Post.query.filter_by(slug=slug)
+                    if self.obj:
+                        posts = posts.filter(db.not_(Post.id==self.obj.id))
+                    if posts.count():
+                        error = _("This slug is taken") if field.data else _("Slug is required")
+                        raise ValidationError, error
+
         _forms[locale] = FormWrapper
 
     return _forms

@@ -97,7 +97,7 @@ class Post(db.Model):
     content = db.Column(db.UnicodeText)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     update_time = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    post_type = db.Column(db.String(32), nullable=False)
+    post_type = db.Column(db.String(32), nullable=False, default="posts")
 
     _tags = db.Column("tags", db.Unicode(100), index=True)
 
@@ -462,7 +462,7 @@ class City(db.Model):
 
 class Act(Post):
     __tablename__ = 'acts'
-    __mapper_args__ = {'polymorphic_identity': ''}
+    __mapper_args__ = {'polymorphic_identity': 'acts'}
 
     id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
     start_date = db.Column(db.DateTime, default=datetime.utcnow)

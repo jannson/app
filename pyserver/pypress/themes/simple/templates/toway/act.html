@@ -1,0 +1,90 @@
+{% extends "../toway_base.html" %}
+
+{% block title %}新建活动{% end %}
+
+{% block js %}
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.browser.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('js/uEditor/uEditor.js') }}"></script>
+    <!--[if !IE]><!--> 
+    <link rel="stylesheet" href="{{ static_url('js/uEditor/uEditor_datauri.css') }}" type="text/css" media="screen" />
+    <!--<![endif]-->
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ static_url('js/uEditor/uEditor.css') }}" type="text/css" media="screen" />
+    <![endif]-->
+    <script type="text/javascript">
+    $(function() {
+        $('#content').uEditor({
+            stylesheet : '{{ static_url('js/uEditor/uEditorContent.css') }}',
+            containerClass : 'uEditor',
+            uploadURL : '/upload'
+        });
+    });
+    </script>
+{% end %}
+
+{% block header_form %}
+{% end %}
+
+{% block content %}
+        {% from pypress.filters import field_errors %}
+<form action="/createact" method="POST" class="mba-form">
+    <div class="header">
+        <li class="section title first">
+            <h3>创建新活动</h3>
+        </li>
+    </div>
+            {{ xsrf_form_html() }}
+            {{ form.hidden_tag() }}
+
+	<div class="body">
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="标题" for="title">标题<span class="req">*</span> </label>
+	<div class="input">
+		<input type="text" class="form-control" name="title" value="{{form.title.data}}" class="textInput" id="title"/>
+	</div>
+            {{ field_errors(form.title) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="链接名称" for="slug">链接名称<span class="req">*</span> </label>
+	<div class="input">
+		<input type="text" class="form-control" name="slug" value="{{form.slug.data}}" class="textInput" id="slug"/>
+	</div>
+            {{ field_errors(form.slug) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="内容" for="content">内容<span class="req">*</span> </label>
+	<div class="uEditor">
+            {{ form.content() }}
+	</div>
+            {{ field_errors(form.content) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="标签" for="tags">标签<span class="req">*</span> </label>
+	<div class="input">
+            {{ form.tags(class_="textInput") }}
+	</div>
+            {{ field_errors(form.tags) }}
+    </div>
+</div>
+
+        {{ field_errors(form.submit) }}
+        <button type="submit" class="btn btn-default btn-primary" name="save" value="save">
+		<span>创建</span>
+        </button>
+
+	</div>
+
+</form>
+
+{% end %}

@@ -17,7 +17,7 @@ from pypress import settings as config
 from pypress import uimodules
 from pypress.helpers import setting_from_object
 from pypress.forms import create_forms
-from pypress.views import account, blog, links, demo, register, sms_send, ErrorHandler
+from pypress.views import account, blog, links, demo, register, sms_send, act, ErrorHandler
 from pypress.database import db, models_committed
 from pypress.extensions.routing import Route
 from pypress.extensions.sessions import RedisSessionStore
