@@ -25,6 +25,7 @@ class SmsTestPrivider(object):
 
         # 10 min
         self.redis.setex(phone, code, 60*10)
+
         return code
     
     def check_code(self, phone, code):

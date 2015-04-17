@@ -96,9 +96,9 @@
                  $("#code-sms").removeAttr('disabled');
              } else {
                  secleft  -= 1;
+		 $("#secwait").text(secleft);
+		 setTimeout(timewaittoresend, 1000);
              }
-             $("#secwait").text(secleft);
-             setTimeout(timewaittoresend, 1000);
          }
 	//$.ajaxSetup({
 	//	headers: {'X-Requested-With': 'XMLHttpRequest'}

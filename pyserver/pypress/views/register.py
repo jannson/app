@@ -9,7 +9,7 @@ from datetime import datetime
 
 from pypress.views import RequestHandler
 from pypress.database import db
-from pypress.models import User, UserCode
+from pypress.models import User, UserCode, Participate
 from pypress.extensions.routing import route
 from pypress.extensions.sms import sms_privider
 
@@ -53,3 +53,62 @@ class Register(RequestHandler):
 
         self.render("toway/register.html", form=form)
 
+@route(r'/api/signupall', name='signupall')
+class SignupAll(RequestHandler):
+    def get(self):
+        self.write("error")
+
+    def post(self):
+        t = self.get_argument("type")
+        mobile = self.get_argument("mobile", "")
+        username = self.get_argument("username", "")
+        identify = self.get_argument("identify", "")
+        password = self.get_argument("password","")
+        code = self.get_argument("code")
+        act_id = self.get_argument("act_id")
+
+        u = None
+        if t == "0":
+            user, authenticated = User.query.authenticate(mobile, password)
+            if user and authenticated:
+                user.last_login = datetime.utcnow() # utcnow
+                db.session.commit()
+                self.session['user'] = user
+                self.session.save()
+                self.flash(self._("Welcome back, %s" % user.username), "success")
+                self.write("renew")
+                u = user
+            else:
+                self.write("error")
+                return
+
+        elif t == "1":
+            u = User.query.filter(User.mobile==mobile).first()
+            if not u:
+                u = User(mobile=mobile, username=username, identify=identify, password="xxxxxx")
+                db.session.add(u)
+                db.session.commit()
+            self.write("ok")
+
+        elif t == "2":
+            u = User.query.filter(User.mobile==mobile).first()
+            if u:
+                u.password = password
+                u.username = username
+                db.session.commit()
+            else:
+                u = User(mobile=mobile, username=username, password=password)
+            db.session.add(u)
+            db.session.commit()
+
+            self.session['user'] = u
+            self.session.save()
+            self.flash(self._("Welcome back, %s" % u.username), "success")
+            self.write("renew")
+
+        try:
+            part = Participate(user_id=u.id, act_id=act_id)
+            db.session.add(part)
+            db.session.commit()
+        except:
+            pass

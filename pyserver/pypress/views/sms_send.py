@@ -9,8 +9,11 @@ from pypress.database import db
 from pypress.models import User, UserCode
 from pypress.extensions.routing import route
 from pypress.extensions.sms import sms_privider
+from pypress.extensions.yunpian import tpl_send_sms
+from pypress.local_settings import YUNPIAN_APIKEY
 
 mobile_re = re.compile(r'\d{6,20}$')
+apikey = YUNPIAN_APIKEY
 
 @route(r'/api/sms_send', name='sms_send')
 class Smssend(RequestHandler):
@@ -37,6 +40,9 @@ class Smssend(RequestHandler):
         code = sms_p.gen_code(remote_ip, phone)
         if code:
             print code
+            tpl_id = 2
+            tpl_value = '#code#=' + str(code) + u'&#company#=突围俱乐部'.encode('utf-8')
+            print(tpl_send_sms(apikey, tpl_id, tpl_value, phone))
             self.write("ok")
         else:
             self.write("error")

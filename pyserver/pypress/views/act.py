@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #coding=utf-8
 
+import re
 import json
 import os
 import urllib
@@ -9,6 +10,7 @@ import tornado.web
 import tornado.escape
 
 from datetime import datetime
+from user_agents import parse
 
 from pypress.views import RequestHandler
 from pypress.database import db
@@ -18,14 +20,14 @@ from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
 
 
+
 @route(r'/createact', name='createact')
 class CreateAct(RequestHandler):
     @tornado.web.authenticated
     def get(self):
 
         form = self.forms.ActForm(next=self.get_args('next',''))
-
-        #self.render("blog/post.html", form=form)
+#self.render("blog/post.html", form=form)
         self.render("toway/act.html", form=form)
         return
 
@@ -54,17 +56,22 @@ class CreateAct(RequestHandler):
         self.render("toway/act.html", form=form)
         return
 
+#pip install pyyaml ua-parser user-agents
 @route(r'/act/(.+)', name='act_view')
 class ActDetail(RequestHandler):
     def get(self, slug):
+        ua_string = self.request.headers.get('user-agent', '')
+        user_agent = parse(ua_string)
         post = Post.query.get_by_slug(slug)
         user = self.get_current_user()
         sign_text = u"报名"
+        is_login = False
         if user:
+            is_login = True
             p = Participate.query.filter_by(user_id=user.id).filter_by(act_id=post.id).first()
             if p:
                 sign_text = u"报名成功"
-        self.render('toway/act_detail.html', post=post, sign_text=sign_text)
+        self.render('toway/act_detail.html', post=post, is_login=is_login, sign_text=sign_text, mobile=user_agent.is_mobile)
 
 @route(r'/api/parts/(\d+)', name='api_parts')
 class ApiParts(RequestHandler):
