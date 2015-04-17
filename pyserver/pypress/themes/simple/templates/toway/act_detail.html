@@ -17,13 +17,13 @@
         <img src="http://photo.toway.me/image/MToxZmZiNDQ0YzE4NmZjMDRlY2VmZjI0NjIzY2U3ZDVhYg" width="100%" height="240px"/>
     </div> 
     <div class="col-md-8  main-info">
-        <h2>志友汇第二届年会</h2>
-        <div>分享嘉宾：</div>
-        <div>时间：2015-02-01 14:00 - 19:00</div>
-        <div>地点：深圳音乐厅1楼</div>
-        <div>费用：150元/人</div>
-        <div>人数限制：128人 (128人已报名)</div>
-        <div>报名时间：2015-01-21 02:00 至 01-30 02:00</div>
+        <h2>{{post.title}}</h2>
+        <div>分享嘉宾：{{post.author}}</div>
+        <div>时间：{{post.start_date.strftime("%Y-%m-%d %H:%M:%S")}} - {{post.finish_date.strftime("%Y-%m-%d %H:%M:%S")}}</div>
+        <div>地点：{{post.location}}</div>
+        <div>费用：{{post.pay_count}}元/人</div>
+        <div>人数限制：{{post.limit_num}}人 (128人已报名)</div>
+        <div>报名时间：{{post.sign_start_date.strftime("%Y-%m-%d %H:%M:%S")}} 至 {{post.sign_finish_date.strftime("%Y-%m-%d %H:%M:%S")}}</div>
         <button class="btn btn-primary disabled">报名人数已满</button>
     </div>
 </div>
@@ -31,7 +31,8 @@
 <div>
     <h3>活动详情</h3>
     <p class="meetup-details">
-    The detail
+        {% from pypress.helpers import code_highlight %}
+        {{ code_highlight(post.content) }}
     </p>
 
     <div class="bdsharebuttonbox" data-tag="share_2" >
@@ -98,12 +99,12 @@ with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElemen
 
 <script>
 $(function(){
-var center = new qq.maps.LatLng(22.5474, 114.057);
+        var center = new qq.maps.LatLng({{post.latitude}}, {{post.longitude}});
 var map = new qq.maps.Map(
 $("#meetup-map")[0],
 {
 center: center,
-zoom:{{ 18 }}
+zoom:{{ post.zoomlevel }}
 }
 );
 
@@ -111,7 +112,7 @@ zoom:{{ 18 }}
 var marker = new qq.maps.Marker({
 position: center,
 map: map,
-    title: "Shenzhen yinyue"
+title: "{{post.location}}"
     });
 
         var scaleControl = new qq.maps.ScaleControl({

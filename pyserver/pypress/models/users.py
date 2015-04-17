@@ -66,6 +66,11 @@ class User(db.Model):
     city_id = db.Column('city_id', db.Integer, db.ForeignKey('city.id'), default=1)
     username = db.Column(db.String(20), unique=True)
     nickname = db.Column(db.String(20))
+    identify = db.Column(db.String(50))
+
+    [MALE, FEMALE] = range(2)
+    sex = db.Column(db.Integer(), default=MALE)
+
     email = db.Column(db.String(100), unique=True, nullable=True)
     mobile = db.Column(db.String(20), unique=True, nullable=True)
     _password = db.Column("password", db.String(80), nullable=False)

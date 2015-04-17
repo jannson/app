@@ -12,7 +12,7 @@
 <form action="/login" method="POST" class="mba-form">
     <div class="header">
         <li class="section title first">
-            <h3>加入突围-注册帐户</h3>
+            <h3>登录</h3>
         </li>
     </div>
             {{ xsrf_form_html() }}
@@ -21,6 +21,9 @@
 	    <input type="hidden" name="remember" value="1"/>
 
 	<div class="body">
+                <li class="section desc">
+                <a href='/register'>未有帐号？直接注册</a>
+                </li>
 
 <div class="form-group">
     <div class="clearfix">
@@ -44,7 +47,7 @@
 
         {{ field_errors(form.submit) }}
         <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
-		<span>注册</span>
+		<span>登录</span>
         </button>
 
 	</div>

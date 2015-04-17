@@ -2,8 +2,28 @@
 
 {% block title %}新建活动{% end %}
 
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{{ reverse_url('theme_static','toway/css/mba_widgets.css') }}">
+{% end %}
+
 {% block js %}
     <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.browser.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.maskedinput.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.core.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.position.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.widget.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.datepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.menu.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.mouse.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.autocomplete.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.slider.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery.ui.sortable.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/mba_widgets.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-timepicker-addon.js') }}"></script>
+    <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-sliderAccess.js') }}"></script>
+
     <script type="text/javascript" src="{{ static_url('js/uEditor/uEditor.js') }}"></script>
     <!--[if !IE]><!--> 
     <link rel="stylesheet" href="{{ static_url('js/uEditor/uEditor_datauri.css') }}" type="text/css" media="screen" />
@@ -19,6 +39,86 @@
             uploadURL : '/upload'
         });
     });
+
+function datePick(oid) {
+        var startDateTextBox = $('#' + oid + "start_date");
+        var endDateTextBox = $('#' + oid + "finish_date");
+
+        var opt1 = {"timeFormat": "HH:mm:ss", "separator": " ", "dateFormat": "yy-mm-dd"};
+        var opt2 = {"timeFormat": "HH:mm:ss", "separator": " ", "dateFormat": "yy-mm-dd"};
+        $.extend(opt1,{
+            onClose: function (dateText, inst) {
+                if (endDateTextBox.val() != '') {
+                    var testStartDate = startDateTextBox.datetimepicker('getDate');
+                    var testEndDate = endDateTextBox.datetimepicker('getDate');
+                    if (testStartDate > testEndDate)
+                        endDateTextBox.datetimepicker('setDate', testStartDate);
+                }
+                else {
+                    endDateTextBox.val(dateText);
+                }
+            },
+            onSelect: function (selectedDateTime){
+                endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate') );
+            }
+        });
+
+        $.extend(opt2, {
+            onClose: function(dateText, inst) {
+                if (startDateTextBox.val() != '') {
+                    var testStartDate = startDateTextBox.datetimepicker('getDate');
+                    var testEndDate = endDateTextBox.datetimepicker('getDate');
+                    if (testStartDate > testEndDate)
+                        startDateTextBox.datetimepicker('setDate', testEndDate);
+                }
+                else {
+                    startDateTextBox.val(dateText);
+                }
+            },
+            onSelect: function (selectedDateTime){
+                startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate') );
+            }
+        });
+        startDateTextBox.datetimepicker(opt1);
+        endDateTextBox.datetimepicker(opt2);
+}
+
+$(document).ready(function (){
+    $("#city_name").radiotree({
+             title: "常驻城市:",
+             position: 'element_bottom',
+             remoteContent: {
+                 type: 'script',
+                 url: "{{ reverse_url('theme_static','toway/js/cityArray.js') }}",
+                 rootVar: 'cityArray'
+             }
+     });
+
+    $("#title").blur(function (){
+          if($("#slug").val() == ""){
+            $("#slug").val($("#title").val());
+          }
+    });
+
+    datePick("act_");
+    datePick("sign_");
+
+  $('#map_sel_btn').click(function(){
+            var lat = $('input[name="latitude"]').val();
+            var lng = $('input[name="longitude"]').val();
+            window.map.setCenter(new qq.maps.LatLng(
+                lat ? lat : 22.5314898650969 ,
+                lng ? lng : 113.915101289749
+            ))
+            var zoom =$('input[name="zoomlevel"]').val() ;
+
+            window.map.setZoom(
+                zoom ? parseInt(zoom) : 13
+            );
+            $("#qqmap").show();
+            return false;
+        });
+});
     </script>
 {% end %}
 
@@ -42,7 +142,7 @@
     <div class="clearfix">
 	<label class="desc" title="标题" for="title">标题<span class="req">*</span> </label>
 	<div class="input">
-		<input type="text" class="form-control" name="title" value="{{form.title.data}}" class="textInput" id="title"/>
+        <input type="text" class="form-control" name="title" value="{{form.title.data}}" id="title"/>
 	</div>
             {{ field_errors(form.title) }}
     </div>
@@ -52,11 +152,121 @@
     <div class="clearfix">
 	<label class="desc" title="链接名称" for="slug">链接名称<span class="req">*</span> </label>
 	<div class="input">
-		<input type="text" class="form-control" name="slug" value="{{form.slug.data}}" class="textInput" id="slug"/>
+        <input type="text" class="form-control" name="slug" value="{{form.slug.data}}" id="slug"/>
 	</div>
             {{ field_errors(form.slug) }}
     </div>
 </div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="活动时间" for="start_date">活动时间<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="hasDatepicker" name="start_date" value="{{form.start_date.data.strftime("%Y-%m-%d %H:%M:%S")}}" id="act_start_date"/> -
+        <input type="text" class="hasDatepicker" name="finish_date" value="{{form.finish_date.data.strftime("%Y-%m-%d %H:%M:%S")}}" id="act_finish_date"/>
+	</div>
+            {{ field_errors(form.start_date) }}
+            {{ field_errors(form.finish_date) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="报名时间" for="sign_start_date">报名时间<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="hasDatepicker" name="sign_start_date" value="{{form.sign_start_date.data.strftime("%Y-%m-%d %H:%M:%S")}}" id="sign_start_date"/> -
+        <input type="text" class="hasDatepicker" name="sign_finish_date" value="{{form.sign_finish_date.data.strftime("%Y-%m-%d %H:%M:%S")}}" id="sign_finish_date"/>
+	</div>
+            {{ field_errors(form.start_date) }}
+            {{ field_errors(form.finish_date) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+        <label class="desc" title="人数限制" for="limit_num">人数限制<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="form-control" name="limit_num" value="{{form.limit_num.data}}" id="limit_num"/>
+	</div>
+            {{ field_errors(form.limit_num) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+        <label class="desc" title="支付" for="pay_count">支付<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="form-control" name="pay_count" value="{{form.pay_count.data}}" id="pay_count"/>
+	</div>
+            {{ field_errors(form.pay_count) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+        <label class="desc" title="城市" for="city_name">城市<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="form-control" name="city_name" value="{{form.city_name.data}}" id="city_name"/>
+	</div>
+            {{ field_errors(form.city_name) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+        <label class="desc" title="详细地址" for="location">详细地址<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" class="form-control" name="location" value="{{form.location.data}}" id="location"/>
+	</div>
+            {{ field_errors(form.location) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+        <label class="latlnglb" title="地图选择" for="map_sel_btn">({{form.latitude.data}},{{form.longitude.data}},{{form.zoomlevel.data}})<span class="req">*</span> </label>
+	<div class="input">
+        <input type="hidden" name="latitude" id="latitude" value="{{form.latitude.data}}"/>
+        <input type="hidden" name="longitude" id="longitude" value="{{form.longitude.data}}"/>
+        <input type="hidden" name="zoomlevel" id="zoomlevel" value="{{form.zoomlevel.data}}" />
+        <button type="button" class="btn btn-default " id="map_sel_btn">在地图上选择位置</button>
+    <span class="qqmap" id="qqmap" style="position: absolute;display: none;width:500px;height: 500px"></span>
+	</div>
+    </div>
+</div>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<script>
+    $(function(){
+        map = new qq.maps.Map(
+            $("#qqmap")[0],
+                {
+                center: new qq.maps.LatLng(39.914850, 116.403765),
+                zoom:13
+                }
+        );
+
+        var scaleControl = new qq.maps.ScaleControl({
+            align: qq.maps.ALIGN.BOTTOM_LEFT,
+            margin: qq.maps.Size(20, 10),
+
+            map: map
+        });
+
+        window.map = map;
+
+        qq.maps.event.addListener(map, 'click', function(event){
+            var lat = event.latLng.getLat();
+            var lng = event.latLng.getLng();
+            window.qmape = event;
+            var zoomlevel = map.getZoom();
+            $('input[name="latitude"]').val(lat);
+            $('input[name="longitude"]').val(lng);
+            $('input[name="zoomlevel"]').val(zoomlevel);
+            $('.latlnglb').html('('+lat+','+lng+','+zoomlevel+')');
+            $("#qqmap").hide();
+        });
+    });
+</script>
 
 <div class="form-group">
     <div class="clearfix">
@@ -72,7 +282,7 @@
     <div class="clearfix">
 	<label class="desc" title="标签" for="tags">标签<span class="req">*</span> </label>
 	<div class="input">
-            {{ form.tags(class_="textInput") }}
+        <input type="text" class="form-control" name="tags" value="{{form.tags.data}}" class="tags" id="tags"/>
 	</div>
             {{ field_errors(form.tags) }}
     </div>

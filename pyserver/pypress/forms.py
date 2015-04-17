@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #coding=utf-8
 import tornado.locale
+from datetime import datetime
 
 from pypress.extensions.forms import Form, TextField, PasswordField, SubmitField, \
         TextAreaField, BooleanField, HiddenField, ValidationError, \
-        required, regexp, equal_to, email, optional, url
+        required, regexp, equal_to, email, optional, url, \
+        IntegerField, DecimalField, DateTimeField
 
 from pypress.models import User, Post
 from pypress.helpers import slugify
@@ -204,16 +206,30 @@ def create_forms():
                         raise ValidationError, u"手机号已经被注册"
 
             class ActForm(Form):
-                title = TextField(_("Title"), validators=[
+                title = TextField(_("Title"), default=u"", validators=[
                                   required(message=_("Title required"))])
 
-                slug = TextField(_("Slug"))
+                slug = TextField(_("Slug"), default=u"")
 
                 content = TextAreaField(_("Content"), validators=[
                                         required(message=_("Content required"))])
 
                 tags = TextField(_("Tags"), validators=[
                                   required(message=_("Tags required"))])
+
+                start_date = DateTimeField(_("StartDate"), default=datetime.now())
+                finish_date = DateTimeField(_("FinishDate"), default=datetime.now())
+                sign_start_date = DateTimeField("SignupStartDate", default=datetime.now())
+                sign_finish_date = DateTimeField("SignupEndDate", default=datetime.now())
+                city_name = TextField(_("CityName"), default=u"深圳")
+                location = TextField(_("Location"), default=u"")
+                limit_num = IntegerField(_("LimitNum"), default=0)
+                pay_count = IntegerField(_("PayCount"), default=0)
+
+                picture = TextField()
+                latitude = DecimalField(default=22.5314898650969)
+                longitude = DecimalField(default=113.915101289749)
+                zoomlevel = IntegerField(default=13)
 
                 submit = SubmitField(_("Save"))
 

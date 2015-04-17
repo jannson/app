@@ -97,13 +97,13 @@ class Post(db.Model):
     content = db.Column(db.UnicodeText)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     update_time = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    post_type = db.Column(db.String(32), nullable=False, default="posts")
+    post_type = db.Column(db.String(32), nullable=False)
 
     _tags = db.Column("tags", db.Unicode(100), index=True)
 
     author = db.relation(User, innerjoin=True, lazy="joined")
 
-    __mapper_args__ = {'order_by': id.desc(), 'polymorphic_on': post_type}
+    __mapper_args__ = {'order_by': id.desc(), 'polymorphic_on': post_type, 'polymorphic_identity': 'posts'}
 
     class Permissions(object):
 
@@ -454,19 +454,35 @@ class City(db.Model):
 
     @classmethod
     def _find_or_create(cls, name):
-        with DBSession.no_autoflush:
-            obj = DBSession.query(City).filter_by(name=name).first()
+        with db.session.no_autoflush:
+            obj = db.session.query(City).filter_by(name=name).first()
         if obj is None:
             obj = City(name=name)
         return obj
+
+class Participate(db.Model):
+    __tablename__ = 'participate'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    act_id = db.Column(db.Integer, db.ForeignKey('acts.id'), primary_key=True)
+    creation_date = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow)
+    #用户参加活动之后可进行评分
+    rating = db.Column(db.Integer(), default=5)
+    user = db.relationship("User", backref=db.backref("part", \
+                                            cascade="all, delete-orphan") )
+    act = db.relationship("Act", backref=db.backref("attend", \
+                                            cascade="all, delete-orphan") )
 
 class Act(Post):
     __tablename__ = 'acts'
     __mapper_args__ = {'polymorphic_identity': 'acts'}
 
     id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    picture = db.Column(db.String(200), default=datetime.utcnow)
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
-    finish_time = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    finish_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    sign_start_date = db.Column(db.DateTime, default=datetime.utcnow)
+    sign_finish_date = db.Column(db.DateTime, default=datetime.utcnow)
     limit_num = db.Column(db.Integer(), default=500)
     pay_count = db.Column(db.Integer(), default=0)
     location = db.Column(db.UnicodeText())
@@ -483,6 +499,18 @@ class Act(Post):
     city_name = association_proxy('city'
             , 'name'
             , creator=City._find_or_create)
+
+    @cached_property
+    def url(self):
+        return route.url_for('act_view',
+                    self.created_date.year,
+                    self.created_date.month,
+                    self.created_date.day,
+                    self.slug.encode('utf8'))
+
+    @property
+    def parts(self):
+        return [rel.user for rel in self.attend]
 
 Post.num_comments = db.column_property(
             db.select([db.func.count(Comment.post_id)]) \
