@@ -26,7 +26,6 @@ $(document).ready(function (){
 
       $("#signup").click(function(e) {
 	{% if is_login %}
-		refreshUsers();
 		var act_id = $("#act_id").val();
 		$.post("/api/logon_sign", {type:"0", act_id: act_id}, function(ret){
 		    if (ret == "ok") {
@@ -51,6 +50,7 @@ $(document).ready(function (){
 	data['act_id'] = $("#act_id").val();
 	$.post("/api/signupall", data, function(data) {
 		if( data == 'ok') {
+			refreshUsers();
 			$("#myModalLabel").html("报名成功!");
 		} else if (data == 'renew') {
 			$("#myModalLabel").html("报名成功!");
