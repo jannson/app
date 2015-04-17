@@ -84,6 +84,9 @@ function datePick(oid) {
 }
 
 $(document).ready(function (){
+    datePick("act_");
+    datePick("sign_");
+
     $("#city_name").radiotree({
              title: "常驻城市:",
              position: 'element_bottom',
@@ -99,9 +102,6 @@ $(document).ready(function (){
             $("#slug").val($("#title").val());
           }
     });
-
-    datePick("act_");
-    datePick("sign_");
 
   $('#map_sel_btn').click(function(){
             var lat = $('input[name="latitude"]').val();

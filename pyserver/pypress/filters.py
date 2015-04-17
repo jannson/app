@@ -16,3 +16,5 @@ def field_errors(field):
         """)
     return t.generate(field=field)
 
+def field_len(field):
+    return str(len(field))

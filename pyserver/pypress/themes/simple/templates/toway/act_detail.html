@@ -1,6 +1,45 @@
 {% extends "../toway_base.html" %}
 {% block title %}注册新用户{% end %}
 
+{% block js %}
+    <script type="text/javascript">
+
+function refreshUsers() {
+    var act_id = $("#act_id").val();
+    $.get("/api/parts/" + act_id, function(ret){
+            $("sign_users").html(ret);
+    });
+}
+
+$(document).ready(function (){
+	$.ajaxSetup({
+	    beforeSend: function(jqXHR, settings) {
+		type = settings.type
+		if (type != 'GET' && type != 'HEAD' && type != 'OPTIONS') {
+		    var pattern = /(.+; *)?_xsrf *= *([^;" ]+)/;
+		    var xsrf = pattern.exec(document.cookie);
+		    if (xsrf) {
+			jqXHR.setRequestHeader('X-XSRFToken', xsrf[2]);
+		    }
+		}
+	}});
+
+	$("#signup").click(function(e) {
+        refreshUsers();
+    var act_id = $("#act_id").val();
+        $.post("/api/logon_sign", {type:"0", act_id: act_id}, function(ret){
+            if (ret == "ok") {
+                $("#signup").html("报名成功");
+                refreshUsers();
+            } else {
+                alert(ret);
+            }
+		});
+	});
+});
+    </script>
+{% end %}
+
 {% block header_form %}
 <ul class="nav navbar-nav">
 <li id="li_index" class="active"><a href="/">首页</a></li>
@@ -12,19 +51,38 @@
 <div class="col-md-9 meetup-main">
     <div class="panel panel-default meetup-subject"> 
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h2 class="modal-title" id="myModalLabel">报名成功！</h2>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="panel-body">
+    <input type="hidden" id="act_id" value="{{post.id}}">
     <div class="col-md-4">
         <img src="http://photo.toway.me/image/MToxZmZiNDQ0YzE4NmZjMDRlY2VmZjI0NjIzY2U3ZDVhYg" width="100%" height="240px"/>
     </div> 
     <div class="col-md-8  main-info">
         <h2>{{post.title}}</h2>
-        <div>分享嘉宾：{{post.author}}</div>
-        <div>时间：{{post.start_date.strftime("%Y-%m-%d %H:%M:%S")}} - {{post.finish_date.strftime("%Y-%m-%d %H:%M:%S")}}</div>
+        <div>联系人：{{post.author.username}}</div>
+        <div>时间：{{post.start_date.strftime("%Y-%m-%d %H:%M:%S")}} 至 {{post.finish_date.strftime("%Y-%m-%d %H:%M:%S")}}</div>
         <div>地点：{{post.location}}</div>
         <div>费用：{{post.pay_count}}元/人</div>
         <div>人数限制：{{post.limit_num}}人 (128人已报名)</div>
         <div>报名时间：{{post.sign_start_date.strftime("%Y-%m-%d %H:%M:%S")}} 至 {{post.sign_finish_date.strftime("%Y-%m-%d %H:%M:%S")}}</div>
-        <button class="btn btn-primary disabled">报名人数已满</button>
+        <button id="signup" class="btn btn-primary" type="button">{{sign_text}}</button>
     </div>
 </div>
 
@@ -54,34 +112,36 @@
     </div>
     <br/>
 
-<div class="applicants">
-    <h3>已报名成员(10人)</h3>
+<div id="sign_users" class="applicants">
+    {% set parts = post.parts %}
+    {% from pypress.filters import field_len %}
+    <h3>已报名成员({{field_len(parts)}}人)</h3>
     <hr/>
     <ul class="users">
+                     {% for p in parts %}
         <li>
             <a href="/person/" target="_blank">
-                <img title="" alt="" class="navbar-avatar" src=""
-            width="40px" height="40px"/>
+                <img title="" alt="" class="navbar-avatar" src="" width="40px" height="40px"/>
             </a>
             <div>
                  <a href="" target="_blank">
-                     Name
+                     {{p.username}}
                  </a>
             </div>
-
         </li>
+
+        {% end %}
     </ul>
     <br/>
-    </div>
+</div>
 
 </div>
 
-<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
 
 <script>
 window._bd_share_config = {
 common : {
-bdText : "我参加了活动志友汇第二届年会，好像挺不错的，小伙伴们一起来吧！",
+bdText : "参加突围俱乐部两年了，《{{post.title}}》活动非常不错，快来加入。",
 bdDesc : '',
 bdUrl : window.location.href,
 bdPic : "http://v-find.com:6543/images/20150122093752_wKCW16YR54/image"
@@ -98,40 +158,26 @@ with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElemen
 </script>
 
 <script>
-$(function(){
-        var center = new qq.maps.LatLng({{post.latitude}}, {{post.longitude}});
-var map = new qq.maps.Map(
-$("#meetup-map")[0],
-{
-center: center,
-zoom:{{ post.zoomlevel }}
+function initQQMap() {
+    var center = new qq.maps.LatLng({{post.latitude}}, {{post.longitude}});
+    var map = new qq.maps.Map(
+        $("#meetup-map")[0], {
+            center: center,
+            zoom:{{ post.zoomlevel }}
+        }
+    );
+    var marker = new qq.maps.Marker({position: center, map: map, title: "{{post.location}}"});
+    var scaleControl = new qq.maps.ScaleControl({
+        align: qq.maps.ALIGN.BOTTOM_LEFT,
+        margin: qq.maps.Size(20, 10),
+        map: map
+    });
 }
-);
 
-
-var marker = new qq.maps.Marker({
-position: center,
-map: map,
-title: "{{post.location}}"
-    });
-
-        var scaleControl = new qq.maps.ScaleControl({
-            align: qq.maps.ALIGN.BOTTOM_LEFT,
-            margin: qq.maps.Size(20, 10),
-
-            map: map
-        });
-
-            $('#myModal').modal('show');
-
-
-        /*
-        $('.iframe bdshare_popup_bg').show();
-
-        div bdshare_popup_box
-        */
-
-    });
+$(function(){
+    $('#myModal').modal('show');
+    with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://map.qq.com/api/js?v=2.exp&callback=initQQMap'];
+});
 
 </script>
 {% end %}

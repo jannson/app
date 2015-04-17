@@ -54,20 +54,24 @@ class CreateAct(RequestHandler):
         self.render("toway/act.html", form=form)
         return
 
-@route(r'/act/(\d{4})/(\d{1,2})/(\d{1,2})/(.+)', name='act_view')
+@route(r'/act/(.+)', name='act_view')
 class ActDetail(RequestHandler):
-    def get(self, year, month, day, slug):
+    def get(self, slug):
         post = Post.query.get_by_slug(slug)
+        user = self.get_current_user()
+        sign_text = u"报名"
+        if user:
+            p = Participate.query.filter_by(user_id=user.id).filter_by(act_id=post.id).first()
+            if p:
+                sign_text = u"报名成功"
+        self.render('toway/act_detail.html', post=post, sign_text=sign_text)
 
-        date = (post.created_date.year,
-                post.created_date.month,
-                post.created_date.day)
-
-        if (int(year), int(month), int(day)) != date:
-            raise tornado.web.HTTPError(404)
-
-        #self.render("blog/view.html", post=post, form=self.forms.CommentForm())
-        self.render('toway/act_detail.html', post=post)
+@route(r'/api/parts/(\d+)', name='api_parts')
+class ApiParts(RequestHandler):
+    def get(self, act_id):
+        parts = Participate.query.filter(Participate.act_id==act_id)
+        users = [rel.user for rel in parts]
+        self.render('toway/api_parts.html', parts=users)
 
 @route(r'/api/logon_sign', name='logon_sign')
 class LogonSign(RequestHandler):
@@ -75,8 +79,17 @@ class LogonSign(RequestHandler):
         self.write("error")
 
     def post(self):
-        act_id = self.get_argument("act_id")
-        user_id = self.get_current_user().id
-        part = Participate(user_id=user_id, act_id=act_id)
-        db.session.add(part)
+        user = self.get_current_user()
+        if user:
+            act_id = self.get_argument("act_id")
+            user_id = user.id
+            try:
+                part = Participate(user_id=user_id, act_id=act_id)
+                db.session.add(part)
+                db.session.commit()
+            except:
+                pass
+            self.write('ok')
+        else:
+            self.write('error')
 

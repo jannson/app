@@ -21,7 +21,7 @@ from pypress.permissions import admin, moderator
 from pypress.database import db
 from pypress.models.users import User
 
-__all__ = ['Post', 'Tag', 'Comment', 'Act', 'City']
+__all__ = ['Post', 'Tag', 'Comment', 'Act', 'City', 'Participate']
 
 
 class PostQuery(BaseQuery):
@@ -470,8 +470,7 @@ class Participate(db.Model):
     rating = db.Column(db.Integer(), default=5)
     user = db.relationship("User", backref=db.backref("part", \
                                             cascade="all, delete-orphan") )
-    act = db.relationship("Act", backref=db.backref("attend", \
-                                            cascade="all, delete-orphan") )
+    act = db.relationship("Act")
 
 class Act(Post):
     __tablename__ = 'acts'
@@ -503,14 +502,12 @@ class Act(Post):
     @cached_property
     def url(self):
         return route.url_for('act_view',
-                    self.created_date.year,
-                    self.created_date.month,
-                    self.created_date.day,
                     self.slug.encode('utf8'))
 
     @property
     def parts(self):
-        return [rel.user for rel in self.attend]
+        parts = Participate.query.filter(Participate.act_id==self.id)
+        return [rel.user for rel in parts]
 
 Post.num_comments = db.column_property(
             db.select([db.func.count(Comment.post_id)]) \

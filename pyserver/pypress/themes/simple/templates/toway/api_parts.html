@@ -1,0 +1,19 @@
+{% from pypress.filters import field_len %}
+<h3>已报名成员({{field_len(parts)}}人)</h3>
+    <hr/>
+    <ul class="users">
+                     {% for p in parts %}
+        <li>
+            <a href="/person/" target="_blank">
+                <img title="" alt="" class="navbar-avatar" src="" width="40px" height="40px"/>
+            </a>
+            <div>
+                 <a href="" target="_blank">
+                     {{p.username}}
+                 </a>
+            </div>
+        </li>
+
+        {% end %}
+    </ul>
+    <br/>
