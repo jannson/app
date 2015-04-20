@@ -19,6 +19,7 @@ from pypress.helpers import generate_random
 from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
 from pypress.extensions.sms import sms_privider
+from pypress.extensions.permission import Permission, RoleNeed
 
 
 @route(r'/act_create', name='act_create')
