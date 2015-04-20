@@ -34,6 +34,7 @@ class Register(RequestHandler):
                 sms_p.delete_code(data['mobile'])
                 user = User(username=data['username'], mobile=data['mobile'], password=data['password'], role=User.MEMBER)
                 user.last_login = datetime.utcnow()
+                user.registed = True
                 db.session.add(user)
                 db.session.commit()
 
@@ -112,3 +113,4 @@ class SignupAll(RequestHandler):
             db.session.commit()
         except:
             pass
+

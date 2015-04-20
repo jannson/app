@@ -14,7 +14,7 @@ class SmsTestPrivider(object):
         key_code = self.redis.get(phone)
         if key_code:
             return key_code
-        code = str(randint(1000,9999))
+        code = str(randint(100000,999999))
 
         cnt_key = ip+":cnt"
         cnt = self.redis.incr(cnt_key)
@@ -27,7 +27,7 @@ class SmsTestPrivider(object):
         self.redis.setex(phone, code, 60*10)
 
         return code
-    
+
     def check_code(self, phone, code):
         if not phone or not code:
             return False

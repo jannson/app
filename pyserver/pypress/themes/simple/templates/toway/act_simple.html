@@ -36,28 +36,9 @@ $(document).ready(function (){
 		    }
 		});
       {% else %}
-    	$('#myModal').modal('show');
+      window.location.href="/act_apply/" + $("#act_id").val();
       {% end %}
 	});
-
-    $("#modalOk").on('click', function(event){
-	var data = {};
-	$(".form-control").each(function () {
-		s = $(this).attr("name");
-		data[s] = $(this).val();
-	});
-	data['type'] = $("#operator").val();
-	data['act_id'] = $("#act_id").val();
-	$.post("/api/signupall", data, function(data) {
-		if( data == 'ok') {
-			refreshUsers();
-			$("#myModalLabel").html("报名成功!");
-		} else if (data == 'renew') {
-			$("#myModalLabel").html("报名成功!");
-			location.reload();
-		}
-	});
-    });
 
 });
     </script>
@@ -136,7 +117,7 @@ $(document).ready(function (){
             </a>
             <div>
                  <a href="/person/{{p.id}}" target="_blank">
-                     {{p.username}}
+                     {{p.nickname}}
                  </a>
             </div>
         </li>
@@ -145,91 +126,6 @@ $(document).ready(function (){
     </ul>
     <br/>
 </div>
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-	<h2 class="modal-title" id="myModalLabel">用户报名</h2>
-	<ul>
-	<li class="section desc">
-	<a href='javascript:showControlType(0)'>已有帐号？</a>
-	</li>
-	<li>
-	<a href='javascript:showControlType(1)'>未注册用户报名</a>
-	</li>
-	<li>
-	<a href='javascript:showControlType(2)'>新注册并报名</a>
-	</li>
-	</ul>
-      </div>
-
-      <div class="modal-body">
-
-<input type="hidden" id="operator" value="0"/>
-<div class="form-group got-control un-control new-control">
-	<div class="clearfix">
-	<label class="desc" title="您的手机号" for="mobile">手机号<span class="req">*</span></label>
-	<div class="input">
-            <input type="text" class="form-control" name="mobile" value="" id="mobile"/>
-	</div>
-    </div>
-</div>
-
-<div class="form-group un-control new-control">
-	<div class="clearfix">
-	<label class="desc" title="您的用户名" for="username">用户名<span class="req">*</span></label>
-	<div class="input">
-            <input type="text" class="form-control" name="username" value="" id="username"/>
-	</div>
-    </div>
-</div>
-
-<div class="form-group un-control">
-	<div class="clearfix">
-	<label class="desc" title="您的身份证" for="username">身份证<span class="req">*</span></label>
-	<div class="input">
-            <input type="text" class="form-control" name="identify" value="" id="identify"/>
-	</div>
-    </div>
-</div>
-
-<div class="form-group got-control new-control">
-	<div class="clearfix">
-	<label class="desc" title="密码" for="password">密码<span class="req">*</span></label>
-	<div class="input">
-            <input type="password" class="form-control" name="password" value="" id="password"/>
-	</div>
-    </div>
-</div>
-
-<div class="form-group new-control">
-	<div class="clearfix">
-		<label class="desc " for="code">验证码<span class="req" id="req-deformField5">*</span></label>
-		<div class="input">
-			<div class="input-group"><input type="text"  name="code" value="" class="form-control" id="code"/>
-				<span class="input-group-btn">
-					<button type="button" class="btn  btn-default" id="code-sms">发送验证码</button>
-				</span>
-			</div>
-	    <span id="waittoresend" style="display:none">等待<span id="secwait">60</span>秒再发送...</span>
-	</div>
-</div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-        <button type="button" class="btn btn-default" id="modalOk">确定</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 
 </div>
 
@@ -275,23 +171,7 @@ function showMap() {
     with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://map.qq.com/api/js?v=2.exp&callback=initQQMap'];
 }
 
-function showControlType(i) {
-	$("#operator").val(i);
-	var s = [".got-control",".un-control", ".new-control"];
-	for(var n = 0; n < s.length; n++) {
-		$(s[n]).each(function () {
-			if(n != i) {
-				$(this).hide();
-			}
-		});
-	}
-	$(s[i]).each(function () {
-		$(this).show();
-	});
-}
-
 $(function(){
-    showControlType(0);
 {% if mobile %}
 {% else %}
 showMap();

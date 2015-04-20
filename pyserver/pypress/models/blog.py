@@ -477,7 +477,7 @@ class Act(Post):
     __mapper_args__ = {'polymorphic_identity': 'acts'}
 
     id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
-    picture = db.Column(db.String(200), default=datetime.utcnow)
+    picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     finish_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     sign_start_date = db.Column(db.DateTime, default=datetime.utcnow)

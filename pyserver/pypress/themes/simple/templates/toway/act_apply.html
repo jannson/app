@@ -1,0 +1,135 @@
+{% extends "../toway_base.html" %}
+{% block title %}报名{% end %}
+
+{% block header_form %}
+<a href="/person" class="navbar-iforgot">
+  个人信息
+</a>
+<a href="/iforgot" class="navbar-iforgot">
+  忘记密码
+</a>
+{% end %}
+
+{% block content %}
+        {% from pypress.filters import field_errors %}
+<form action="" method="POST" class="mba-form">
+    <div class="header">
+        <li class="section title first">
+        <h3>活动：{{act.title}}-报名</h3>
+        </li>
+    </div>
+            {{ xsrf_form_html() }}
+            {{ form.hidden_tag() }}
+	<div class="body">
+                <li class="section desc">
+                <a href='/act/{{act.slug}}'>返回：{{act.title}}</a>
+                </li>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="手机号" for="mobile">手机号<span class="req">*</span> </label>
+	<div class="input">
+		<input type="text" class="form-control" name="mobile" value="{{form.mobile.data}}" id="mobile"/>
+	</div>
+                {{ field_errors(form.mobile) }}
+    </div>
+</div>
+        
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc" title="您的真实姓名" for="realname">真实姓名<span class="req">*</span></label>
+		<div class="input">
+            <input type="text" class="form-control" name="realname" value="{{form.realname.data}}" id="realname" placeholder="曾经填写过可不再填"/>
+		</div>
+                {{ field_errors(form.realname) }}
+    </div>
+</div>
+
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc" title="您的昵称" for="realname">昵称<span class="req">*</span></label>
+		<div class="input">
+            <input type="text" class="form-control" name="nickname" value="{{form.nickname.data}}" id="nickname" placeholder="为空则为真实姓名"/>
+		</div>
+                {{ field_errors(form.nickname) }}
+    </div>
+</div>
+
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc" title="您的身份证" for="identify">身份证<span class="req">*</span></label>
+		<div class="input">
+            <input type="text" class="form-control" name="identify" value="{{form.identify.data}}" id="identify" placeholder="曾经填写过可不再填"/>
+		</div>
+                {{ field_errors(form.identify) }}
+    </div>
+</div>
+        
+<div class="form-group">
+	<div class="clearfix">
+		<label class="desc " for="code">验证码<span class="req" id="req-deformField5">*</span></label>
+		<div class="input">
+			<div class="input-group"><input type="password"  name="code" value="" class="form-control" id="code" placeholder="验证码或密码"/>
+				<span class="input-group-btn">
+					<button type="button" class="btn  btn-default" id="code-sms">发送验证码</button>
+				</span>
+			</div>
+	    <span id="waittoresend" style="display:none">等待<span id="secwait">60</span>秒再发送...</span>
+                {{ field_errors(form.code) }}
+	</div>
+</div>
+
+        {{ field_errors(form.submit) }}
+        <button type="submit" class="btn btn-default btn-primary" name="register" value="register">
+		<span>报名</span>
+        </button>
+
+    	</div>
+	<script>
+         function timewaittoresend(){
+            var secleft = parseInt($("#secwait").text());
+             if( secleft == 0){
+                 secleft = 60;
+                 $("#waittoresend").hide();
+                 $("#code-sms").removeAttr('disabled');
+             } else {
+                 secleft  -= 1;
+		 $("#secwait").text(secleft);
+		 setTimeout(timewaittoresend, 1000);
+             }
+         }
+	//$.ajaxSetup({
+	//	headers: {'X-Requested-With': 'XMLHttpRequest'}
+	//});
+	$.ajaxSetup({
+	    beforeSend: function(jqXHR, settings) {
+		type = settings.type
+		if (type != 'GET' && type != 'HEAD' && type != 'OPTIONS') {
+		    var pattern = /(.+; *)?_xsrf *= *([^;" ]+)/;
+		    var xsrf = pattern.exec(document.cookie);
+		    if (xsrf) {
+			jqXHR.setRequestHeader('X-XSRFToken', xsrf[2]);
+		    }
+		}
+	}});
+	$("#code-sms").click(function(e) {
+		var phone_re = /^\d{6,20}$/
+		var phone = $("#mobile").val().trim();
+		if(phone.length != 11 || (!phone_re.test(phone))){
+			alert("手机格式不合法");
+			return false;
+		}
+		$("#waittoresend").show();
+		$("#code-sms").attr('disabled','disabled');
+
+        $.post("/api/sms_send", {type: "0", phone: phone}, function(ret){
+            if(ret == "error") {
+                $("#secwait").text("3")
+            }
+		});
+        setTimeout(timewaittoresend, 1000);
+	});
+
+	</script>
+    </form>
+{% end %}

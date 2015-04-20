@@ -26,7 +26,7 @@ class UserQuery(BaseQuery):
     def authenticate(self, login, password):
 
         user = self.filter(db.or_(User.username==login,
-                                  User.mobile==login)).first()
+                                  User.mobile==login)).filter(User.registed==True).first()
 
         if user:
             authenticated = user.check_password(password)
@@ -64,21 +64,25 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     #1:Shenzhen
     city_id = db.Column('city_id', db.Integer, db.ForeignKey('city.id'), default=1)
-    username = db.Column(db.String(20), unique=True)
-    nickname = db.Column(db.String(20))
-    identify = db.Column(db.String(50))
+    username = db.Column(db.String(20), unique=True, nullable=True)
+    nickname = db.Column(db.String(20), nullable=True)
+    realname = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(100), unique=True, nullable=True)
+    mobile = db.Column(db.String(20), unique=True, nullable=True)
+    _password = db.Column("password", db.String(80), nullable=False)
+    identify = db.Column(db.String(50), nullable=True)
+    avatar = db.Column(db.String(200))
 
     [MALE, FEMALE] = range(2)
     sex = db.Column(db.Integer(), default=MALE)
 
-    email = db.Column(db.String(100), unique=True, nullable=True)
-    mobile = db.Column(db.String(20), unique=True, nullable=True)
-    _password = db.Column("password", db.String(80), nullable=False)
     role = db.Column(db.Integer, default=MEMBER)
     activation_key = db.Column(db.String(40))
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    validate_till = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     block = db.Column(db.Boolean, default=False)
+    registed = db.Column(db.Boolean, default=False)
 
     class Permissions(object):
 
@@ -105,8 +109,10 @@ class User(db.Model):
 
     @cached_property
     def provides(self):
-        needs = [RoleNeed('authenticated'),
-                 UserNeed(self.id)]
+        needs = [UserNeed(self.id)]
+
+        if self.registed:
+            needs.append(RoleNeed('authenticated'))
 
         if self.is_moderator:
             needs.append(RoleNeed('moderator'))

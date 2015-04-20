@@ -20,6 +20,7 @@ from pypress.models import User, Post, Tag, Comment
 from pypress.helpers import generate_random
 from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
+from pypress.extensions.permission import Permission, RoleNeed
 
 
 @route(r'/', name='archive')
@@ -28,12 +29,12 @@ from pypress.extensions.routing import route
 @route(r'/(\d{4})/(\d{1,2})/(\d{1,2})/', name='archive_day')
 class Archive(RequestHandler):
     def get(self, year=None, month=None, day=None):
-        
+
         page = self.get_args('page', 1, type=int)
-        
+
         page_obj = Post.query.archive(year, month, day).as_list() \
                              .paginate(page=page, per_page=Post.PER_PAGE)
-        
+
         if day:
             path = self.reverse_url('archive_day', year, month, day)
         elif month:
@@ -46,7 +47,8 @@ class Archive(RequestHandler):
         page_url = lambda page: path + \
                             '?%s' % urllib.urlencode(dict(page=page))
 
-        self.render("blog/list.html", 
+        #self.render("blog/list.html",
+        self.render("toway/list.html",
                     page_obj=page_obj,
                     page_url=page_url)
         return
@@ -55,9 +57,9 @@ class Archive(RequestHandler):
 @route(r'/archives', name='archives')
 class Archives(RequestHandler):
     def get(self):
-        
+
         page = self.get_args('page', 1, type=int)
-        
+
         page_obj = Post.query.as_list() \
                              .paginate(page=page, per_page=Post.PER_PAGE)
 
@@ -73,7 +75,7 @@ class Archives(RequestHandler):
 @route(r'/search', name='search')
 class Search(RequestHandler):
     def get(self):
-        
+
         keywords = self.get_args('q')
         page = self.get_args('page', 1, type=int)
 
@@ -88,12 +90,12 @@ class Search(RequestHandler):
             post = page_obj.items[0]
             self.redirect(post.url)
             return
-            
+
         page_url = lambda page: self.reverse_url('search') + \
                                 '?%s' % urllib.urlencode(dict(page=page,
                                                               q=keywords))
-                                                        
-        self.render("blog/search.html", 
+
+        self.render("blog/search.html",
                     page_obj=page_obj,
                     page_url=page_url,
                     keywords=keywords)
@@ -103,7 +105,7 @@ class Search(RequestHandler):
 @route(r'/tags', name='tags')
 class TagWall(RequestHandler):
     def get(self):
-        
+
         tags = Tag.query.cloud()
 
         self.render("blog/tags.html", tags=tags)
@@ -113,7 +115,7 @@ class TagWall(RequestHandler):
 @route(r'/tag/(.+)', name='tag')
 class TagView(RequestHandler):
     def get(self, slug):
-        
+
         page = self.get_args('page', 1, type=int)
 
         tag = Tag.query.filter_by(slug=slug).first_or_404()
@@ -123,43 +125,43 @@ class TagView(RequestHandler):
 
         page_url = lambda page: self.reverse_url('tag', slug) + \
                                 '?%s' % urllib.urlencode(dict(page=page))
-        
+
         self.render("blog/tag.html",
                     page_obj=page_obj,
                     page_url=page_url,
                     tagname=tag.name)
-        return 
+        return
 
 
 @route(r'/people/(.+)', name='people')
 class People(RequestHandler):
     def get(self, username):
-        
+
         page = self.get_args('page', 1, type=int)
-        
+
         people = User.query.get_by_username(username)
-    
+
         page_obj = Post.query.filter(Post.author_id==people.id).as_list() \
                              .paginate(page, per_page=Post.PER_PAGE)
-    
+
         page_url = lambda page: self.reverse_url('people', username) + \
                                 '?%s' % urllib.urlencode(dict(page=page))
-    
-        self.render("blog/people.html", 
+
+        self.render("blog/people.html",
                     page_obj=page_obj,
                     page_url=page_url,
                     people=people)
-        return     
+        return
 
 
 @route(r'/(\d{4})/(\d{1,2})/(\d{1,2})/(.+)', name='post_view')
 class View(RequestHandler):
     def get(self, year, month, day, slug):
-        
+
         post = Post.query.get_by_slug(slug)
 
-        date = (post.created_date.year, 
-                post.created_date.month, 
+        date = (post.created_date.year,
+                post.created_date.month,
                 post.created_date.day)
 
         if (int(year), int(month), int(day)) != date:
@@ -170,22 +172,22 @@ class View(RequestHandler):
 
     def post(self, year, month, day, slug):
         """ add comment """
-         
+
         post = Post.query.get_by_slug(slug)
 
         form = self.forms.CommentForm(self.request.arguments)
-        
+
         if form.validate():
-            
+
             captcha = form.captcha.data
 
             if self.get_secure_cookie("captcha") == captcha:
 
                 comment = Comment(post=post,
                                   ip=self.request.remote_ip)
-                
+
                 form.populate_obj(comment)
-                
+
                 if self.current_user:
                     comment.author_id = self.current_user.id
 
@@ -205,7 +207,9 @@ class View(RequestHandler):
 class Submit(RequestHandler):
     @tornado.web.authenticated
     def get(self):
-        
+
+        p = Permission(RoleNeed("authenticated"))
+        p.test(self.identity, 401)
         form = self.forms.PostForm(next=self.get_args('next',''))
 
         self.render("blog/post.html", form=form)
@@ -213,17 +217,17 @@ class Submit(RequestHandler):
 
     @tornado.web.authenticated
     def post(self):
-        
+
         form = self.forms.PostForm(self.request.arguments)
 
         if form.validate():
-            
+
             post = Post(author_id=self.current_user.id)
             form.populate_obj(post)
 
             db.session.add(post)
             db.session.commit()
-            
+
             # redirect
             next_url = form.next.data
             if not next_url:
@@ -232,45 +236,45 @@ class Submit(RequestHandler):
             return
 
         self.render("blog/post.html", form=form)
-        return 
+        return
 
 
 @route(r'/post/(\d+)/edit', name='post_edit')
 class Edit(RequestHandler):
     @tornado.web.authenticated
     def get(self, post_id):
-     
+
         post = Post.query.get_or_404(post_id)
 
         post.permissions.edit.test(self.identity, 401)
-    
+
         form = self.forms.PostForm(title = post.title,
                                    slug = post.slug,
                                    content = post.content,
                                    tags = post.tags,
                                    obj = post)
-            
+
         self.render("blog/edit.html", form=form)
         return
 
     @tornado.web.authenticated
     def post(self, post_id):
-        
+
         post = Post.query.get_or_404(post_id)
-        
+
         post.permissions.edit.test(self.identity, 401)
 
         form = self.forms.PostForm(self.request.arguments, obj=post)
-        
+
         if form.validate():
-    
+
             form.populate_obj(post)
             db.session.commit()
-    
+
             next_url = post.url
             self.redirect(next_url)
             return
-    
+
         self.render("blog/edit.html", form=form)
         return
 
@@ -279,23 +283,23 @@ class Edit(RequestHandler):
 class Delete(RequestHandler):
     @tornado.web.authenticated
     def get(self, post_id):
-        
+
         post = Post.query.get_or_404(post_id)
-        
+
         post.permissions.delete.test(self.identity, 401)
 
         db.session.delete(post)
         db.session.commit()
 
         self.redirect('/')
-        return 
+        return
 
 
 @route(r'/comment/(\d+)/delete', name='comment_delete')
 class DeleteComment(RequestHandler):
     @tornado.web.authenticated
     def post(self, comment_id):
-        
+
         comment = Comment.query.get_or_404(int(comment_id))
 
         comment.permissions.delete.test(self.identity, 401)
@@ -348,7 +352,7 @@ class GetCaptcha(RequestHandler):
     def get(self):
         text = generate_random(4)
         self.set_secure_cookie("captcha", text)
-        
+
         strIO = Recaptcha(text)
 
         #,mimetype='image/png'
@@ -360,16 +364,16 @@ class GetCaptcha(RequestHandler):
 @route(r'/captcha/check', name='check_captcha')
 class CheckCaptcha(RequestHandler):
     def get(self):
-    
+
         captcha = self.get_args('captcha')
-        
+
         if self.get_secure_cookie("captcha") == captcha:
             success = True
         else:
             success = False
-        
+
         self.write(dict(success=success))
         return
-    
+
 
 

@@ -215,7 +215,7 @@ def create_forms():
                                         required(message=_("Content required"))])
 
                 tags = TextField(_("Tags"), validators=[
-                                  required(message=_("Tags required"))])
+                                  required(message=_("Tags required"))], default=u"")
 
                 start_date = DateTimeField(_("StartDate"), default=datetime.now())
                 finish_date = DateTimeField(_("FinishDate"), default=datetime.now())
@@ -245,6 +245,25 @@ def create_forms():
                     if posts.count():
                         error = _("This slug is taken") if field.data else _("Slug is required")
                         raise ValidationError, error
+
+            class ActApplyForm(Form):
+                mobile = TextField(_("Mobile"), validators=[
+                                     required(message=_("Mobile required")),
+                                     is_mobile], default=u"")
+
+                realname = TextField(_("RealName"), default=u"")
+
+                nickname = TextField(_("NickName"), default=u"")
+
+                identify = TextField(_("Identity"), default=u"")
+
+                code = PasswordField(_("Code"), validators=[
+                                         required(message=_("Auth code required"))], default=u"")
+
+                act_id = HiddenField(default=u"")
+                next = HiddenField(default=u"")
+
+                submit = SubmitField(_("Register"), default=u"")
 
         _forms[locale] = FormWrapper
 

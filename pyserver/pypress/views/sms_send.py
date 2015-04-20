@@ -29,10 +29,10 @@ class Smssend(RequestHandler):
             self.write("phone_error")
             return
 
-        user = User.query.filter(User.mobile==phone).first()
-        if user:
-            self.write("phone_exists")
-            return
+        #user = User.query.filter(User.mobile==phone).first()
+        #if user:
+        #    self.write("phone_exists")
+        #    return
 
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = self.request.remote_ip if not x_real_ip else x_real_ip
@@ -42,7 +42,7 @@ class Smssend(RequestHandler):
             print code
             tpl_id = 2
             tpl_value = '#code#=' + str(code) + u'&#company#=突围俱乐部'.encode('utf-8')
-            print(tpl_send_sms(apikey, tpl_id, tpl_value, phone))
+            #print(tpl_send_sms(apikey, tpl_id, tpl_value, phone))
             self.write("ok")
         else:
             self.write("error")
