@@ -312,6 +312,7 @@ class DeleteComment(RequestHandler):
         return
 
 
+#http://segmentfault.com/a/1190000002429055
 @route(r'/upload', name='upload')
 class Upload(RequestHandler):
     def post(self):

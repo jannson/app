@@ -24,20 +24,15 @@
     <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-timepicker-addon.js') }}"></script>
     <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-sliderAccess.js') }}"></script>
 
-    <script type="text/javascript" src="{{ static_url('js/uEditor/uEditor.js') }}"></script>
-    <!--[if !IE]><!--> 
-    <link rel="stylesheet" href="{{ static_url('js/uEditor/uEditor_datauri.css') }}" type="text/css" media="screen" />
-    <!--<![endif]-->
-    <!--[if IE]>
-    <link rel="stylesheet" href="{{ static_url('js/uEditor/uEditor.css') }}" type="text/css" media="screen" />
-    <![endif]-->
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/ueditor1_4_3/ueditor.config.js') }}"></script>
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/ueditor1_4_3/ueditor.all.min.js') }}"> </script>
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/ueditor1_4_3/lang/zh-cn/zh-cn.js') }}"></script>
+
     <script type="text/javascript">
     $(function() {
-        $('#content').uEditor({
-            stylesheet : '{{ static_url('js/uEditor/uEditorContent.css') }}',
-            containerClass : 'uEditor',
-            uploadURL : '/upload'
-        });
+	    var ue = UE.getEditor('content', {
+		serverUrl: "/upload/"
+	    });
     });
 
 function datePick(oid) {
