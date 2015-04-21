@@ -126,9 +126,12 @@
 		$("#waittoresend").show();
 		$("#code-sms").attr('disabled','disabled');
 
-        $.post("/api/sms_send", {type: "0", phone: phone}, function(ret){
+        $.post("/api/sms_send", {type: "1", phone: phone, act_id:{{act.id}}}, function(ret){
             if(ret == "error") {
                 $("#secwait").text("3")
+            } else if(ret == "alreadyok") {
+                $("#secwait").text("3")
+                $("#code-sms").text("您已报名");
             }
 		});
         setTimeout(timewaittoresend, 1000);

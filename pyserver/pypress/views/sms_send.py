@@ -6,7 +6,7 @@ from datetime import datetime
 
 from pypress.views import RequestHandler
 from pypress.database import db
-from pypress.models import User, UserCode
+from pypress.models import User, UserCode, Participate
 from pypress.extensions.routing import route
 from pypress.extensions.sms import sms_privider
 from pypress.extensions.yunpian import tpl_send_sms
@@ -15,6 +15,7 @@ from pypress.local_settings import YUNPIAN_APIKEY
 mobile_re = re.compile(r'\d{6,20}$')
 apikey = YUNPIAN_APIKEY
 
+#todo do better hear
 @route(r'/api/sms_send', name='sms_send')
 class Smssend(RequestHandler):
     def get(self):
@@ -24,6 +25,15 @@ class Smssend(RequestHandler):
     #http://www.keakon.net/2012/12/03/Tornado%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C
     def post(self):
         phone = self.get_argument("phone", default=None)
+        t = int(self.get_argument("type", default="0"))
+        if t == 1:
+            act_id = self.get_argument("act_id", default=0)
+            u = User.query.filter_by(mobile=phone).first()
+            if u:
+                p = Participate.query.filter_by(user_id=u.id).filter_by(act_id=act_id).first()
+                if p:
+                    self.write("alreadyok")
+                    return
 
         if not phone or not mobile_re.match(phone):
             self.write("phone_error")

@@ -201,4 +201,4 @@ class ActApply(RequestHandler):
 @route(r'/act_apply_ok/(.+)', name='act_apply_ok')
 class ActApplyOk(RequestHandler):
     def get(self, next_url):
-        self.write(u"报名成功! <a href='%s'>返回</a>" % next_url)
+        self.write(u"报名成功! <h3><a href='%s'>返回</a></h3>" % next_url)
