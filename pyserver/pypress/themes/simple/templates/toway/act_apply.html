@@ -1,5 +1,6 @@
 {% extends "../toway_base.html" %}
 {% block title %}活动报名{% end %}
+{% block description %}活动报名：{{act.title}} {% end %}
 
 {% block header %}
 {% end %}
@@ -9,7 +10,7 @@
 <form action="" method="POST" class="mba-form">
     <div class="header">
         <li class="section title first">
-        <h3>活动：{{act.title}}-报名</h3>
+        <h3>活动报名：{{act.title}}</h3>
         </li>
     </div>
             {{ xsrf_form_html() }}
