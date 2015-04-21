@@ -464,7 +464,7 @@ class Participate(db.Model):
     __tablename__ = 'participate'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    act_id = db.Column(db.Integer, db.ForeignKey('acts.id'), primary_key=True)
+    act_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
     creation_date = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow)
     #用户参加活动之后可进行评分
     rating = db.Column(db.Integer(), default=5)
@@ -477,7 +477,7 @@ class Act(Post):
     __mapper_args__ = {'polymorphic_identity': 'acts'}
 
     id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
-    picture = db.Column(db.String(200))
+    linkinfo = db.Column(db.String(200), default="")
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     finish_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     sign_start_date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -485,6 +485,7 @@ class Act(Post):
     limit_num = db.Column(db.Integer(), default=500)
     pay_count = db.Column(db.Integer(), default=0)
     location = db.Column(db.UnicodeText())
+    act_type = db.Column(db.Integer(), default=0)
 
     [STATUS_PUBLIC, STATUS_DRAFT, STATUS_PRIVATE, STATUS_CANCEL, STATUS_DELETED] = range(5)
     status = db.Column(db.Integer(), nullable=False, default=STATUS_PUBLIC)

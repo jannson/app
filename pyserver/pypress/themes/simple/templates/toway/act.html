@@ -122,7 +122,7 @@ $(document).ready(function (){
 
 {% block content %}
         {% from pypress.filters import field_errors %}
-<form action="/createact" method="POST" class="mba-form">
+<form action="" method="POST" class="mba-form">
     <div class="header">
         <li class="section title first">
             <h3>创建新活动</h3>
@@ -150,6 +150,17 @@ $(document).ready(function (){
         <input type="text" class="form-control" name="slug" value="{{form.slug.data}}" id="slug"/>
 	</div>
             {{ field_errors(form.slug) }}
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="图片链接" for="slug">图片链接<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" name="linkinfo" value="{{form.linkinfo.data}}" id="linkinfo"/>
+	    <label class="desc" title="原文链接" for="act_type">原文链接<span class="req">*</span> </label>
+        {{ form.act_type(class_="text") }}
+	</div>
     </div>
 </div>
 

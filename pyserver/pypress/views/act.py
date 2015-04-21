@@ -44,7 +44,6 @@ class CreateAct(RequestHandler):
             post = Act(author_id=self.current_user.id)
             form.populate_obj(post)
             post.author_id = self.get_current_user().id
-            print "the author is: ", post.author_id
 
             db.session.add(post)
             db.session.commit()
@@ -74,7 +73,12 @@ class ActDetail(RequestHandler):
             p = Participate.query.filter_by(user_id=user.id).filter_by(act_id=post.id).first()
             if p:
                 sign_text = u"报名成功"
-        self.render('toway/act_simple.html', post=post, is_login=is_login, sign_text=sign_text, mobile=user_agent.is_mobile)
+
+        if post.act_type == 0:
+            html = 'toway/act_simple.html'
+        else:
+            html = 'toway/act_brief.html'
+        self.render(html, post=post, is_login=is_login, sign_text=sign_text, mobile=user_agent.is_mobile)
 
 @route(r'/api/parts/(\d+)', name='api_parts')
 class ApiParts(RequestHandler):
@@ -103,16 +107,21 @@ class LogonSign(RequestHandler):
         else:
             self.write('error')
 
-@route(r'/act_apply/(\d+)', name='act_apply')
+@route(r'/act_apply/(.+)', name='act_apply')
 class ActApply(RequestHandler):
-    def get(self, act_id):
-        act = Act.query.get_or_404(act_id)
+    def get(self, slug):
+        #act = Act.query.get_or_404(act_id)
+        act = Post.query.get_by_slug(slug)
+        act_id = act.id
         form = self.forms.ActApplyForm(next=self.get_args('next'))
         form.act_id.process_data(act.id)
-        form.next.process_data(act.url)
+        if act.act_type == 0:
+            form.next.process_data(act.url)
+        else:
+            form.next.process_data(act.linkinfo)
         self.render('toway/act_apply.html', act=act, form=form)
 
-    def post(self, act_id):
+    def post(self, slug):
         form = self.forms.ActApplyForm(self.request.arguments)
         if form.validate():
             data = form.data
@@ -149,7 +158,9 @@ class ActApply(RequestHandler):
 
                 if not pass_ok:
                     sms_p = sms_privider(self.application, "test")
-                    if not sms_p.check_code(mobile, code):
+                    code_ok = sms_p.check_code(mobile, code)
+                    sms_p.delete_code(mobile)
+                    if not code_ok:
                         form.submit.errors.append(u"The code is error")
                         break
 
@@ -177,10 +188,17 @@ class ActApply(RequestHandler):
                 self.flash(self._("%s" % user.nickname), "success apply !")
 
                 next_url = form.next.data
-                self.redirect(next_url)
+                path = self.reverse_url('act_apply_ok', next_url)
+                self.redirect(path)
 
                 #break while True
                 break
 
-        act = Act.query.get_or_404(act_id)
+        act = Post.query.get_by_slug(slug)
+        #act = Act.query.get_or_404(act_id)
         self.render("toway/act_apply.html", act=act, form=form)
+
+@route(r'/act_apply_ok/(.+)', name='act_apply_ok')
+class ActApplyOk(RequestHandler):
+    def get(self, next_url):
+        self.write(u"报名成功! <a href='%s'>返回</a>" % next_url)

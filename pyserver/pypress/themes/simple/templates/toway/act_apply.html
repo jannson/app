@@ -22,7 +22,11 @@
             {{ form.hidden_tag() }}
 	<div class="body">
                 <li class="section desc">
+                {% if act.act_type == 0 %}
                 <a href='/act/{{act.slug}}'>返回：{{act.title}}</a>
+                {% else %}
+                <a href='{{act.linkinfo}}'>返回：{{act.title}}</a>
+                {% end %}
                 </li>
 
 <div class="form-group">

@@ -488,6 +488,3 @@ class CheckCaptcha(RequestHandler):
 
         self.write(dict(success=success))
         return
-
-
-

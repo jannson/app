@@ -14,6 +14,7 @@ from pypress.database import db
 
 USERNAME_RE = r'^[\w.+-]+$'
 MOBILE_RE = r'^\d+$'
+IDENTIFY_RE = r'^\d{18}$'
 
 
 def create_forms():
@@ -29,6 +30,7 @@ def create_forms():
                              message=_("You can only use letters, numbers or dashes"))
         is_mobile = regexp(MOBILE_RE,
                              message=u"只能填入手机号")
+        is_identify = regexp(IDENTIFY_RE, message=u"身份证填写错误")
 
         class FormWrapper(object):
 
@@ -226,7 +228,8 @@ def create_forms():
                 limit_num = IntegerField(_("LimitNum"), default=0)
                 pay_count = IntegerField(_("PayCount"), default=0)
 
-                picture = TextField()
+                linkinfo = TextField(default=u"")
+                act_type = BooleanField(default=False)
                 latitude = DecimalField(default=22.5314898650969)
                 longitude = DecimalField(default=113.915101289749)
                 zoomlevel = IntegerField(default=13)
@@ -255,7 +258,8 @@ def create_forms():
 
                 nickname = TextField(_("NickName"), default=u"")
 
-                identify = TextField(_("Identity"), default=u"")
+                identify = TextField(_("Identity"), validators=[
+                                     required(message=u"身份证填写错误") ,is_identify], default=u"")
 
                 code = PasswordField(_("Code"), validators=[
                                          required(message=_("Auth code required"))], default=u"")
