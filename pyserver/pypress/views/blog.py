@@ -7,6 +7,7 @@
 """
 import json
 import os
+import re
 import urllib
 import logging
 import tornado.web
@@ -14,6 +15,7 @@ import tornado.escape
 
 from datetime import datetime
 
+from tornado.escape import json_encode
 from pypress.views import RequestHandler
 from pypress.database import db
 from pypress.models import User, Post, Tag, Comment
@@ -21,6 +23,8 @@ from pypress.helpers import generate_random
 from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
 from pypress.extensions.permission import Permission, RoleNeed
+from uploader import Uploader, WrapFileObj
+from ..settings import STATIC_PATH, UPLOAD_PATH
 
 
 @route(r'/', name='archive')
@@ -311,10 +315,118 @@ class DeleteComment(RequestHandler):
                         comment_id=comment_id))
         return
 
-
 #http://segmentfault.com/a/1190000002429055
-@route(r'/upload', name='upload')
+#http://stackoverflow.com/questions/18354389/how-to-handle-mime-type-in-tornado
+@route(r'/upload/*', name='upload')
 class Upload(RequestHandler):
+    def check_xsrf_cookie(self):
+        return False
+
+    def get(self):
+        return self.post()
+
+    def post(self):
+        CONFIG = {}
+        result = {}
+        mimetype = 'application/json'
+        action = self.get_argument("action", default=None)
+        request = self.request
+
+        with open(os.path.join(STATIC_PATH,"ueditor","php","config.json")) as fp:
+            CONFIG = json.loads(re.sub(r'\/\*.*\*\/', '', fp.read()))
+
+        if action == "config":
+            result = CONFIG
+        elif action in ('uploadimage', 'uploadfile', 'uploadvideo'):
+            if action == 'uploadimage':
+                fieldName = CONFIG.get('imageFieldName')
+                config = {
+                    "pathFormat": CONFIG['imagePathFormat'],
+                    "maxSize": CONFIG['imageMaxSize'],
+                    "allowFiles": CONFIG['imageAllowFiles']
+                }
+            elif action == 'uploadvideo':
+                fieldName = CONFIG.get('videoFieldName')
+                config = {
+                    "pathFormat": CONFIG['videoPathFormat'],
+                    "maxSize": CONFIG['videoMaxSize'],
+                    "allowFiles": CONFIG['videoAllowFiles']
+                }
+            else:
+                fieldName = CONFIG.get('fileFieldName')
+                config = {
+                    "pathFormat": CONFIG['filePathFormat'],
+                    "maxSize": CONFIG['fileMaxSize'],
+                    "allowFiles": CONFIG['fileAllowFiles']
+                }
+
+            if fieldName in request.files:
+                field = request.files[fieldName][0]
+                uploader = Uploader(WrapFileObj(field), config, UPLOAD_PATH)
+                result = uploader.getFileInfo()
+            else:
+                result['state'] = u'上传接口出错'
+
+        elif action in ('uploadscrawl'):
+            # 涂鸦上传
+            fieldName = CONFIG.get('scrawlFieldName')
+            config = {
+                "pathFormat": CONFIG.get('scrawlPathFormat'),
+                "maxSize": CONFIG.get('scrawlMaxSize'),
+                "allowFiles": CONFIG.get('scrawlAllowFiles'),
+                "oriName": "scrawl.png"
+            }
+            if fieldName in request.form:
+                field = request.form[fieldName][0]
+                uploader = Uploader(WrapFileObj(field), config, UPLOAD_PATH, 'base64')
+                result = uploader.getFileInfo()
+            else:
+                result['state'] = u'上传接口出错'
+
+        elif action in ('catchimage'):
+            config = {
+                "pathFormat": CONFIG['catcherPathFormat'],
+                "maxSize": CONFIG['catcherMaxSize'],
+                "allowFiles": CONFIG['catcherAllowFiles'],
+                "oriName": "remote.png"
+            }
+            fieldName = CONFIG['catcherFieldName']
+            if fieldName in request.form:
+                # 这里比较奇怪，远程抓图提交的表单名称不是这个
+                source = []
+            elif '%s[]' % fieldName in request.form:
+                # 而是这个
+                source = request.form.getlist('%s[]' % fieldName)
+            _list = []
+            for imgurl in source:
+                uploader = Uploader(imgurl, config, UPLOAD_PATH, 'remote')
+                info = uploader.getFileInfo()
+                _list.append({
+                    'state': info['state'],
+                    'url': info['url'],
+                    'original': info['original'],
+                    'source': imgurl,
+                })
+            result['state'] = 'SUCCESS' if len(_list) > 0 else 'ERROR'
+            result['list'] = _list
+        else:
+            result['state'] = u'请求地址出错'
+
+        callback = self.get_argument('callback', None)
+        if callback:
+            if re.match(r'^[\w_]+$', callback):
+                result = '%s(%s)' % (callback, result)
+                mimetype = 'application/javascript'
+            else:
+                result = json.dumps({'state': u'callback参数不合法'})
+
+        self.set_header("Content-Type", "application/json")
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "*")
+        result = json.dumps(result)
+        self.write(result)
+
+    '''
     def post(self):
         if 'upload' in self.request.files:
             f = self.request.files['upload'][0]
@@ -346,6 +458,7 @@ class Upload(RequestHandler):
 
         self.write(dict(success=False, error=error))
         return
+    '''
 
 
 @route(r'/captcha/get', name='get_captcha')

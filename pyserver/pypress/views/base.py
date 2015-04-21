@@ -58,7 +58,6 @@ class FlashMessageMixIn(object):
     def get_flashed_messages(self):
         messages = self.messages()
         self.clear_cookie('flash_messages')
-        print messages
         return messages
 
 

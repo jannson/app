@@ -17,7 +17,7 @@ THEME_PATH = os.path.join(os.path.dirname(__file__), 'themes', THEME_NAME)
 THEME_TEMPLATE_PATH = os.path.join(THEME_PATH, 'templates')
 THEME_STATIC_PATH = os.path.join(THEME_PATH, 'static')
 
-UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploads')
+UPLOAD_PATH = os.path.join(STATIC_PATH, 'uploads')
 
 DEFAULT_LOCALE = 'zh_CN'
 

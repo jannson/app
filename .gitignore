@@ -55,6 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
 local_settings.py
 cscope.*
 tags
+pyserver/pypress/static/uploads
