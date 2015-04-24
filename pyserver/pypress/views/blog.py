@@ -27,7 +27,7 @@ from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
 from pypress.extensions.permission import Permission, RoleNeed
 from uploader import Uploader, WrapFileObj
-from ..settings import STATIC_PATH, UPLOAD_PATH, CONTENT_HOST, CONTENT_PORT, IMAGE_BASE_URL
+from ..settings import STATIC_PATH, UPLOAD_PATH, CONTENT_HOST, CONTENT_PORT, IMAGE_BASE_URL, USE_CONTENT_STORAGE
 
 
 @route(r'/', name='archive')
@@ -328,15 +328,34 @@ class Upload2(RequestHandler):
         output = StringIO.StringIO()
         output.write(body)
         output.seek(0)
-        id = "error"
+        url = "error"
         try:
             r = requests.post(api_url, files={"upload_file": output})
             resp = json.loads(r.text)
             if resp["errorCode"] == 0:
-                id = IMAGE_BASE_URL + "/" + resp["response"]
+                url = IMAGE_BASE_URL + "/" + resp["response"]
         except Exception, err:
             print sys.exc_info()[0]
-        return id
+        return url
+
+    def save_body_local(self, body, filename):
+        now = datetime.now()
+        alt, ext = os.path.splitext(filename)
+        filename = now.strftime('%d%H%M%S%f') + ext
+        dirs = os.path.join(UPLOAD_PATH, str(now.year), str(now.month))
+        if not os.path.isdir(dirs):
+            os.makedirs(dirs)
+        path = os.path.join(dirs, filename)
+        url = "error"
+        try:
+            outfile = open(path, 'w')
+            outfile.write(body)
+            outfile.close()
+        except:
+            error = "save file error"
+        else:
+            url = os.path.join('/static/uploads', str(now.year), str(now.month), filename)
+        return url
 
     def get(self):
         return self.post()
@@ -346,8 +365,13 @@ class Upload2(RequestHandler):
         self.set_header("Access-Control-Allow-Methods", "OPTIONS, HEAD, GET, POST, PUT, DELETE")
         self.set_header("Access-Control-Allow-Headers", "Content-Type, Content-Range, Content-Disposition")
         if len(self.request.files) > 0:
-            self.write(self.save_body(self.request.files["myfile"][0]["body"]))
-            return
+            f = self.request.files["myfile"][0]
+            if 'image' in f['content_type']:
+                if USE_CONTENT_STORAGE:
+                    self.write(self.save_body(f["body"]))
+                else:
+                    self.write(self.save_body_local(f["body"], f["filename"]))
+                return
         self.write("error")
 
 #http://segmentfault.com/a/1190000002429055

@@ -32,6 +32,12 @@ REDIS_HOST = 'localhost'
 REDIS_PORT = 6380
 REDIS_DB = 0
 
+# content storage
+USE_CONTENT_STORAGE = False
+IMAGE_BASE_URL = "http://10.1.1.98:5000/image"
+CONTENT_HOST = '127.0.0.1'
+CONTENT_PORT = 5000
+
 try:
     from local_settings import *
 except:
