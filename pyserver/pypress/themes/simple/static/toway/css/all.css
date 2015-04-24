@@ -2,6 +2,7 @@
 
 /* global style begin */
 
+html{overflow-x:hidden;}
 body,
 body h1,
 body h2,
