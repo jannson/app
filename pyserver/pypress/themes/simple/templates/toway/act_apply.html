@@ -23,10 +23,10 @@
             {{ form.hidden_tag() }}
 	<div class="body">
         <div class="thumbnail">
-                <img class="lazy" alt="{{act.title}}" data-original="{{act.photo}}/200_200"/>
+                <img class="lazy" alt="{{act.title}}" src="{{act.photo}}/200_200"/>
 	<script>
                 $(function() {
-                    $("img.lazy").lazyload();
+                    //$("img.lazy").lazyload();
                 });
     </script>
 
