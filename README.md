@@ -1,16 +1,16 @@
 # app
 
-* register
+ * register
   /register
 
-* login
+ * login
   /login
 
-* create activity
+ * create activity
   /act_create
 
-* show a act
+ * show a act
   /act/[slug]
 
-* apply a act
+ * apply a act
   /act_apply/[slug]
