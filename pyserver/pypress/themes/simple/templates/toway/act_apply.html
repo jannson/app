@@ -2,8 +2,14 @@
 {% block title %}活动报名{% end %}
 {% block description %}活动报名：{{act.title}} {% end %}
 
+{% block js %}
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/jquery.lazyload.min.js') }}"></script>
+{% end %}
+
 {% block header %}
 {% end %}
+
+{% block margintop %}mba-margin-top2{% end %}
 
 {% block content %}
         {% from pypress.filters import field_errors %}
@@ -16,8 +22,17 @@
             {{ xsrf_form_html() }}
             {{ form.hidden_tag() }}
 	<div class="body">
+        <div class="thumbnail">
+                <img class="lazy" alt="{{act.title}}" data-original="{{act.photo}}/200_200"/>
+	<script>
+                $(function() {
+                    $("img.lazy").lazyload();
+                });
+    </script>
+
+        </div>
                 <li class="section desc">
-                {% if act.act_type == 0 %}
+                {% if len(act.linkinfo) == 0 %}
                 <a href='/act/{{act.slug}}'>返回：{{act.title}}</a>
                 {% else %}
                 <a href='{{act.linkinfo}}'>返回：{{act.title}}</a>

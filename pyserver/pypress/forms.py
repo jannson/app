@@ -229,7 +229,8 @@ def create_forms():
                 pay_count = IntegerField(_("PayCount"), default=0)
 
                 linkinfo = TextField(default=u"")
-                act_type = BooleanField(default=False)
+
+                photo = TextField(default=u"")
                 latitude = DecimalField(default=22.5314898650969)
                 longitude = DecimalField(default=113.915101289749)
                 zoomlevel = IntegerField(default=13)

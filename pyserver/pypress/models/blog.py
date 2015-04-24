@@ -477,6 +477,7 @@ class Act(Post):
     __mapper_args__ = {'polymorphic_identity': 'acts'}
 
     id = db.Column('id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    photo = db.Column(db.String(200), default="")
     linkinfo = db.Column(db.String(200), default="")
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     finish_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -485,7 +486,6 @@ class Act(Post):
     limit_num = db.Column(db.Integer(), default=500)
     pay_count = db.Column(db.Integer(), default=0)
     location = db.Column(db.UnicodeText())
-    act_type = db.Column(db.Integer(), default=0)
 
     [STATUS_PUBLIC, STATUS_DRAFT, STATUS_PRIVATE, STATUS_CANCEL, STATUS_DELETED] = range(5)
     status = db.Column(db.Integer(), nullable=False, default=STATUS_PUBLIC)

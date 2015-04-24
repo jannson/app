@@ -74,7 +74,7 @@ class ActDetail(RequestHandler):
             if p:
                 sign_text = u"报名成功"
 
-        if post.act_type == 0:
+        if len(post.linkinfo) == 0:
             html = 'toway/act_simple.html'
         else:
             html = 'toway/act_brief.html'
@@ -115,7 +115,7 @@ class ActApply(RequestHandler):
         act_id = act.id
         form = self.forms.ActApplyForm(next=self.get_args('next'))
         form.act_id.process_data(act.id)
-        if act.act_type == 0:
+        if len(act.linkinfo) == 0:
             form.next.process_data(act.url)
         else:
             form.next.process_data(act.linkinfo)

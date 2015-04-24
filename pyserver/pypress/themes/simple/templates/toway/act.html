@@ -24,6 +24,9 @@
     <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-timepicker-addon.js') }}"></script>
     <script type="text/javascript" src="{{ reverse_url('theme_static','toway/js/jquery-ui-sliderAccess.js') }}"></script>
 
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/jquery.iframe-transport.js') }}"></script>
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/jquery.fileupload.js') }}"></script>
+    <script type="text/javascript" charset="utf-8" src="{{ static_url('js/jquery.lazyload.min.js') }}"></script>
     <script type="text/javascript" charset="utf-8" src="{{ static_url('ueditor/ueditor.config.js') }}"></script>
     <script type="text/javascript" charset="utf-8" src="{{ static_url('ueditor/ueditor.all.min.js') }}"> </script>
     <script type="text/javascript" charset="utf-8" src="{{ static_url('ueditor/lang/zh-cn/zh-cn.js') }}"></script>
@@ -113,6 +116,15 @@ $(document).ready(function (){
             $("#qqmap").show();
             return false;
         });
+
+    $('#fileupload').fileupload({
+        dataType: 'text',
+        done: function (e, data) {
+            $("#headerImg").attr("data-original", data.result+"/150_150");
+            $("#photo").val(data.result);
+            $("img.lazy").lazyload();
+        }
+    });
 });
     </script>
 {% end %}
@@ -155,11 +167,20 @@ $(document).ready(function (){
 
 <div class="form-group">
     <div class="clearfix">
-	<label class="desc" title="图片链接" for="slug">图片链接<span class="req">*</span> </label>
+	<label class="desc" title="图片">图片<span class="req">*</span> </label>
 	<div class="input">
-        <input type="text" name="linkinfo" value="{{form.linkinfo.data}}" id="linkinfo"/>
-	    <label class="desc" title="原文链接" for="act_type">原文链接<span class="req">*</span> </label>
-        {{ form.act_type(class_="text") }}
+    <img id="headerImg" class="lazy" data-original="{{form.photo.data}}"/>
+        <input id="fileupload" type="file" name="myfile" data-url="/upload2" multiple>
+        <input type="hidden" name="photo" id="photo" value="{{form.photo.data}}"/>
+	</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="clearfix">
+	<label class="desc" title="原文链接" for="slug">原文链接<span class="req">*</span> </label>
+	<div class="input">
+        <input type="text" name="linkinfo" class="form-control" value="{{form.linkinfo.data}}" id="linkinfo"/>
 	</div>
     </div>
 </div>

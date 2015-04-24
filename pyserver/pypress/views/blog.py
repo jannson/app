@@ -5,11 +5,14 @@
     ~~~~~~~~~~~~~~~~~
     :author: laoqiu.com@gmail.com
 """
-import json
+import sys
 import os
 import re
 import urllib
 import logging
+import StringIO
+import json
+import requests
 import tornado.web
 import tornado.escape
 
@@ -24,7 +27,7 @@ from pypress.utils.imagelib import Recaptcha
 from pypress.extensions.routing import route
 from pypress.extensions.permission import Permission, RoleNeed
 from uploader import Uploader, WrapFileObj
-from ..settings import STATIC_PATH, UPLOAD_PATH
+from ..settings import STATIC_PATH, UPLOAD_PATH, CONTENT_HOST, CONTENT_PORT, IMAGE_BASE_URL
 
 
 @route(r'/', name='archive')
@@ -314,6 +317,38 @@ class DeleteComment(RequestHandler):
         self.write(dict(success=True,
                         comment_id=comment_id))
         return
+
+@route(r'/upload2/*', name="upload2")
+class Upload2(RequestHandler):
+    def check_xsrf_cookie(self):
+        return False
+
+    def save_body(self, body):
+        api_url = "http://" + CONTENT_HOST + ":" + str(CONTENT_PORT) + "/upload/image"
+        output = StringIO.StringIO()
+        output.write(body)
+        output.seek(0)
+        id = "error"
+        try:
+            r = requests.post(api_url, files={"upload_file": output})
+            resp = json.loads(r.text)
+            if resp["errorCode"] == 0:
+                id = IMAGE_BASE_URL + "/" + resp["response"]
+        except Exception, err:
+            print sys.exc_info()[0]
+        return id
+
+    def get(self):
+        return self.post()
+
+    def post(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Methods", "OPTIONS, HEAD, GET, POST, PUT, DELETE")
+        self.set_header("Access-Control-Allow-Headers", "Content-Type, Content-Range, Content-Disposition")
+        if len(self.request.files) > 0:
+            self.write(self.save_body(self.request.files["myfile"][0]["body"]))
+            return
+        self.write("error")
 
 #http://segmentfault.com/a/1190000002429055
 #http://stackoverflow.com/questions/18354389/how-to-handle-mime-type-in-tornado

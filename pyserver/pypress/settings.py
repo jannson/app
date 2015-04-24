@@ -19,6 +19,10 @@ THEME_STATIC_PATH = os.path.join(THEME_PATH, 'static')
 
 UPLOAD_PATH = os.path.join(STATIC_PATH, 'uploads')
 
+IMAGE_BASE_URL = "http://10.1.1.98:5000/image"
+CONTENT_HOST = '127.0.0.1'
+CONTENT_PORT = 5000
+
 DEFAULT_LOCALE = 'zh_CN'
 
 REDIS_SERVER = True
