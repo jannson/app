@@ -65,22 +65,23 @@ class JsonForm(object):
     def __init__(self, json_data, live_schema=None):
         if not hasattr(json_data, '__getitem__'):
             raise TypeError('json_data must be a dict.')
-        if live_schema is not None:
-            self._schema = live_schema
-        else:
-            if not self.schema:
+        if not self.schema:
                 raise NotImplementedError('schema not implemented!')
-            self._schema = self.schema
-        Draft4Validator.check_schema(self._schema)
+        if live_schema is not None:
+            self.schema['properties'].update(live_schema['properties'])
+            if "required" in self.schema and "required" in live_schema:
+                self.schema['required'] = list(set(self.schema['required']) | set(live_schema["required"]))
+
+        Draft4Validator.check_schema(self.schema)
 
         self.data = {}
-        self._filter_data(json_data, self._schema['properties'], self.data)
-        self.validator = Draft4Validator(self._schema)
+        self._filter_data(json_data, self.schema['properties'], self.data)
+        self.validator = Draft4Validator(self.schema)
         self.errors = None
 
     def validate(self):
         try:
-            self.validator.validate(self.data, self._schema)
+            self.validator.validate(self.data, self.schema)
             return True
         except jsonschema.ValidationError as e:
             self.errors = str(e)
@@ -108,7 +109,7 @@ class JsonForm(object):
     @property
     def fields(self):
         fields = []
-        propertries = self._schema['properties']
+        propertries = self.schema['properties']
         for key, value in propertries.items():
             fields.append(
                 self.generators[value["type"]](
@@ -128,7 +129,8 @@ _schema = {
             "type": "number",
             "name": "测试样例",
             "input_id": "to_uid",
-            "extra_classes": ["example_class", ]
+            "extra_classes": ["example_class", ],
+            "pattern": "\d+",
         },
     },
     "required": ['to_uid', ],
@@ -136,11 +138,19 @@ _schema = {
 
 
 def test():
+    class Form(JsonForm):
+        schema = {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        }
+
     form_data = {"to_uid": "fuck"}
-    form = JsonForm(json_data={}, live_schema=_schema)
+
+    form = Form(json_data={}, live_schema=_schema)
     for field in form.fields:
         print field.render()
-    form = JsonForm(json_data=form_data, live_schema=_schema)
+    form = Form(json_data=form_data, live_schema=_schema)
     if not form.validate():
         print form.errors
 
