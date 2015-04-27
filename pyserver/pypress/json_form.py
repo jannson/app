@@ -63,19 +63,21 @@ class JsonForm(object):
         if not hasattr(json_data, '__getitem__'):
             raise TypeError('json_data must be a dict.')
         if live_schema is not None:
-            self.schema = live_schema
-        if not self.schema:
-            raise NotImplementedError('schema not implemented!')
-        Draft4Validator.check_schema(self.schema)
+            self._schema = live_schema
+        else:
+            if not self.schema:
+                raise NotImplementedError('schema not implemented!')
+            self._schema = self.schema
+        Draft4Validator.check_schema(self._schema)
 
         self.data = {}
-        self._filter_data(json_data, self.schema['properties'], self.data)
-        self.validator = Draft4Validator(self.schema)
+        self._filter_data(json_data, self._schema['properties'], self.data)
+        self.validator = Draft4Validator(self._schema)
         self.errors = None
 
     def validate(self):
         try:
-            self.validator.validate(self.data, self.schema)
+            self.validator.validate(self.data, self._schema)
             return True
         except jsonschema.ValidationError as e:
             self.errors = str(e)
@@ -103,7 +105,7 @@ class JsonForm(object):
     @property
     def fields(self):
         fields = []
-        propertries = self.schema['properties']
+        propertries = self._schema['properties']
         for key, value in propertries.items():
             fields.append(
                 self.generators[value["type"]](
@@ -135,6 +137,7 @@ def test():
     form = JsonForm(json_data={}, live_schema=_schema)
     for field in form.fields:
         print field.render()
+    form = JsonForm(json_data=form_data, live_schema=_schema)
     if not form.validate():
         print form.errors
 
