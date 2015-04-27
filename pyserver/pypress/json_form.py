@@ -38,6 +38,9 @@ class BaseField(object):
             extra_classes=" ".join(self.extra_classes),
         )
 
+    def __str__(self):
+        return self.render()
+
 
 class StringField(BaseField):
 
