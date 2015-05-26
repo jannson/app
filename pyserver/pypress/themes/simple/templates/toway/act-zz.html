@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>突围-活动报名：{{act.title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" type="text/css" href="/static/zz/appframework/build/icons.css" />
+    <link rel="stylesheet" type="text/css" href="/static/zz/appframework/build/af.ui.css" />
+    <link rel="stylesheet" href="/static/zz/css/index.css">
+
+     <script type="text/javascript" charset="utf-8" src="/static/zz/js/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/static/zz/js/fastclick.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/static/zz/appframework/build/appframework.ui.js"></script>
+
+</head>
+<body>
+        {% from pypress.filters import field_errors %}
+	<div id="splashscreen" class='ui-loader heavy'>
+        突围-活动报名
+        <br>
+        <br>
+        <span class='ui-icon ui-icon-loading spin'></span>
+        <h1>启动页面</h1>
+    </div>
+
+    <div class="view" id="mainview">
+    	<header>
+    		<h1>活动报名</h1>
+    	</header>
+
+    	<div class="pages">
+    		<div class="panel" data-title="活动报名" id="signup" data-header='<p>roger</p>' data-footer="<h1>footer</h1>">
+    			<div id="poster">
+    				<h3 class="desc">{{act.title}}</h3>
+    			</div>
+    			<div class="content">
+    				<p class="sub-title">2015.04.28 | 321浏览    活动发起人：<span class="text-green">明星</span></p>
+
+    				<div class="inner-panel">
+    					<ul class="tab">
+    						<li class="active"><a data-href="#activity-desc">活动简介</a></li>
+    						<li><a data-href="#activitor-desc">组织者介绍</a></li>
+    					</ul>
+    					<div class="tab-content">
+    						<div id="activity-desc"  class="tab-panel in">阳光明媚的日子里，是该出去走走了。让眼睛去看漫山的绿色，让鼻子去轻嗅泥土的芬芳。5月最佳的徒步圣地，非武功山莫属，这座徒步爱好者心中的天堂，有最美的云海，最壮阔的高山草甸，漫天的繁星，会让你终生难忘！<br/>这个五一，趁着武功山最美的季节，与突围的小伙伴约定一场身体在地狱，灵魂在天堂的旅行吧！
+                            </div>
+    						<div id="activitor-desc" class="tab-panel">
+    							Janson
+    						</div>
+    					</div>
+    				</div>
+
+    				<div class="inner-panel panel-pad">
+    					<span class="link-title">链接 •</span>
+                        {% if len(act.linkinfo) == 0 %}
+                        <a class="link" href='/act/{{act.slug}}'>返回：{{act.title}}</a>
+                        {% else %}
+                        <a class="link" href='{{act.linkinfo}}'>返回：{{act.title}}</a>
+                        {% end %}
+    				</div>
+
+    				<div class="inner-panel" style="background: inherit">
+<form action="" method="POST">
+            {{ xsrf_form_html() }}
+            {{ form.hidden_tag() }}
+    						<ul class="form-lines">
+    							<li>
+    								<div>
+                                        <span class="title">活动报名</span> <span class="title-desc">填写正确的手机号，两个星期内可自动报名。</span>
+                                    </div>
+    							</li>
+    							<li>
+    								<span class="form-title">手机号</span>
+		                            <input type="text" class="form-field" name="mobile" value="{{form.mobile.data}}" id="mobile" style="width: 55%;"/>
+					                <button type="button" class="btn-send" id="code-sms">发送验证码</button>
+    							</li>
+    							<li>
+    								<span class="form-title">验证码</span>
+                                    <input type="password"  name="code" value="" class="form-field" id="code" style="width: 55%;" placeholder="验证码或密码"/>
+	                                <span id="waittoresend" style="display:none">等待<span id="secwait">60</span>秒再发送...</span>
+    							</li>
+    							<li>
+    								<span class="form-title">真实姓名</span>
+                                    <input type="text" class="form-field" name="realname" value="{{form.realname.data}}" id="realname" placeholder="曾经填写过可不再填"/>
+    							</li>
+    							<li>
+    								<span class="form-title">微信昵称</span>
+                                    <input type="text" class="form-field" name="nickname" value="{{form.nickname.data}}" id="nickname" placeholder="为空则为真实姓名"/>
+    							</li>
+    							<li>
+    								<span class="form-title">身份证</span>
+                                    <input type="text" class="form-field" name="identify" value="{{form.identify.data}}" id="identify" placeholder="曾经填写过可不再填"/>
+    							</li>
+    						</ul>
+
+                            {{ field_errors(form.mobile) }}
+                            {{ field_errors(form.realname) }}
+                            {{ field_errors(form.nickname) }}
+                            {{ field_errors(form.identify) }}
+                            {{ field_errors(form.code) }}
+                            {{ field_errors(form.submit) }}
+                            <input type="submit" class="btn-submit" name="register" value="确认报名"/>
+    					</form>
+    				</div>
+    			</div>
+    			
+    		</div>
+    		<div class="panel" data-title=" " data-cssClasses="red" id="signup-success" data-header='<p>roger</p>' data-text="test" data-footer="<h1>footer</h1>">
+    			<div class="content">
+                    <div class="inner-panel">
+                        <h2 class="text-center">报名成功</h2>
+                        <h3 class="text-center">活动时间在<span class="activity-time">2015.03.08</span>,请准时参加！</h3>
+
+                        <img src="/static/zz/img/bg.png" alt="活动海报" class="poster-success">
+
+                        <p class="activity-desc">#远行# 风景再美 也不如你的陪伴 | 五一轻装醉美武功山</p>
+                    </div>  
+
+                    <div class="inner-panel" style="background: inherit;  width: 97%;">
+                        <form>
+                            <ul class="form-lines">
+                                <li style="margin: 0; border-bottom:1px solid #ddd">
+                                    <div>
+                                        <span class="title">已报名小伙伴</span> <span class="title-desc">56人报名</span><span class="right up"></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </form>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="img/person.jpg" alt="" class="image">
+                                <ul class="right person-item">
+                                    <li><span class="name">roger</span> <span class="man"></span></li>
+                                    <li>参加<span class="count">20</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>       
+                </div>
+    		</div>
+    	</div>
+    </div>
+    <script src="/static/zz/js/index.js"></script>
+	<script>
+         function timewaittoresend(){
+            var secleft = parseInt($("#secwait").text());
+             if( secleft == 0){
+                 secleft = 60;
+                 $("#waittoresend").hide();
+                 $("#code-sms").removeAttr('disabled');
+             } else {
+                 secleft  -= 1;
+		 $("#secwait").text(secleft);
+		 setTimeout(timewaittoresend, 1000);
+             }
+         }
+	//$.ajaxSetup({
+	//	headers: {'X-Requested-With': 'XMLHttpRequest'}
+	//});
+	$.ajaxSetup({
+	    beforeSend: function(jqXHR, settings) {
+		type = settings.type
+		if (type != 'GET' && type != 'HEAD' && type != 'OPTIONS') {
+		    var pattern = /(.+; *)?_xsrf *= *([^;" ]+)/;
+		    var xsrf = pattern.exec(document.cookie);
+		    if (xsrf) {
+			jqXHR.setRequestHeader('X-XSRFToken', xsrf[2]);
+		    }
+		}
+	}});
+	$("#code-sms").click(function(e) {
+		var phone_re = /^\d{6,20}$/
+		var phone = $("#mobile").val().trim();
+		if(phone.length != 11 || (!phone_re.test(phone))){
+			alert("手机格式不合法");
+			return false;
+		}
+		$("#waittoresend").show();
+		$("#code-sms").attr('disabled','disabled');
+
+        $.post("/api/sms_send", {type: "1", phone: phone, act_id:{{act.id}}}, function(ret){
+            if(ret == "error") {
+                $("#secwait").text("3")
+            } else if(ret == "alreadyok") {
+                $("#secwait").text("3")
+                $("#code-sms").text("您已报名");
+            }
+		});
+        setTimeout(timewaittoresend, 1000);
+	});
+
+	</script>
+</body>
+</html>

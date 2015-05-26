@@ -119,7 +119,8 @@ class ActApply(RequestHandler):
             form.next.process_data(act.url)
         else:
             form.next.process_data(act.linkinfo)
-        self.render('toway/act_apply.html', act=act, form=form)
+        #self.render('toway/act_apply.html', act=act, form=form)
+        self.render('toway/act-zz.html', act=act, form=form)
 
     def post(self, slug):
         form = self.forms.ActApplyForm(self.request.arguments)
