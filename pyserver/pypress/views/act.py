@@ -228,7 +228,7 @@ class ActApply(RequestHandler):
             key_value = {}
             args = self.request.arguments
             for k in key_set:
-                if k in args:
+                if k in args and len(args[k]) > 0:
                     key_value[k] = args[k]
 
             #check
