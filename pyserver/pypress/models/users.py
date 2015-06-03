@@ -72,6 +72,7 @@ class User(db.Model):
     _password = db.Column("password", db.String(80), nullable=False)
     identify = db.Column(db.String(50), nullable=True)
     avatar = db.Column(db.String(200))
+    extra_info = db.Column(db.UnicodeText())
 
     [MALE, FEMALE] = range(2)
     sex = db.Column(db.Integer(), default=MALE)
@@ -144,6 +145,16 @@ class User(db.Model):
     @property
     def is_admin(self):
         return self.role >= self.ADMIN
+
+    @cached_property
+    def base_info(self):
+        return set(["username", "nickname", "mobile"])
+
+    @property
+    def extras(self):
+        if self.extra_info:
+            return json.loads(self.extra_info)
+        return {}
 
     @property
     def json(self):

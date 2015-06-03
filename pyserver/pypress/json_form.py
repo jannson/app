@@ -204,7 +204,3 @@ def test2():
     # 重新初始化
     form = Form(json_data=form_data, live_schema=new_schema)
 
-
-if __name__ == "__main__":
-    test()
-    test2()

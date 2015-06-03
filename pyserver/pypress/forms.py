@@ -259,8 +259,8 @@ def create_forms():
 
                 nickname = TextField(_("NickName"), default=u"")
 
-                identify = TextField(_("Identity"), validators=[
-                                     required(message=u"身份证填写错误") ,is_identify], default=u"")
+                #identify = TextField(_("Identity"), validators=[
+                #                     required(message=u"身份证填写错误") ,is_identify], default=u"")
 
                 code = PasswordField(_("Code"), validators=[
                                          required(message=_("Auth code required"))], default=u"")

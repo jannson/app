@@ -47,6 +47,7 @@ class Register(RequestHandler):
                 if not next_url:
                     next_url = '/'
                 self.redirect(next_url)
+                return
             else:
                 form.submit.errors.append(u"Register error")
 

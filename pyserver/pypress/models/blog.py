@@ -7,6 +7,7 @@
 """
 
 import re, random
+import json
 from datetime import datetime
 
 import tornado.web
@@ -20,6 +21,7 @@ from pypress.helpers import storage, slugify, markdown, endtags
 from pypress.permissions import admin, moderator
 from pypress.database import db
 from pypress.models.users import User
+#from pypress.json_fields import UserExtraField
 
 __all__ = ['Post', 'Tag', 'Comment', 'Act', 'City', 'Participate']
 
@@ -486,6 +488,8 @@ class Act(Post):
     limit_num = db.Column(db.Integer(), default=500)
     pay_count = db.Column(db.Integer(), default=0)
     location = db.Column(db.UnicodeText())
+    organizer = db.Column(db.String(50))
+    extra_fields = db.Column(db.UnicodeText())
 
     [STATUS_PUBLIC, STATUS_DRAFT, STATUS_PRIVATE, STATUS_CANCEL, STATUS_DELETED] = range(5)
     status = db.Column(db.Integer(), nullable=False, default=STATUS_PUBLIC)
@@ -509,6 +513,13 @@ class Act(Post):
     def parts(self):
         parts = Participate.query.filter(Participate.act_id==self.id)
         return [rel.user for rel in parts]
+
+    #TODO for JsonForms
+    @property
+    def extras(self):
+        if self.extra_fields:
+            return json.loads(self.extra_fields)
+        return []
 
 Post.num_comments = db.column_property(
             db.select([db.func.count(Comment.post_id)]) \

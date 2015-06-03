@@ -15,6 +15,14 @@
     <script type="text/javascript" charset="utf-8" src="/static/zz/js/fastclick.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/static/zz/appframework/build/appframework.ui.js"></script>
 
+<style>
+#poster {
+    background: url({{act.photo}}) no-repeat  0 0;
+	height: 300px;
+	position: relative;
+}
+</style>
+
 </head>
 <body>
         {% from pypress.filters import field_errors %}
@@ -37,7 +45,7 @@
     				<h3 class="desc">{{act.title}}</h3>
     			</div>
     			<div class="content">
-    				<p class="sub-title">2015.04.28 | 321浏览    活动发起人：<span class="text-green">明星</span></p>
+                    <p class="sub-title">活动发起人：<span class="text-green">{{act.organizer}}</span></p>
 
     				<div class="inner-panel">
     					<ul class="tab">
@@ -45,8 +53,7 @@
     						<li><a data-href="#activitor-desc">组织者介绍</a></li>
     					</ul>
     					<div class="tab-content">
-    						<div id="activity-desc"  class="tab-panel in">阳光明媚的日子里，是该出去走走了。让眼睛去看漫山的绿色，让鼻子去轻嗅泥土的芬芳。5月最佳的徒步圣地，非武功山莫属，这座徒步爱好者心中的天堂，有最美的云海，最壮阔的高山草甸，漫天的繁星，会让你终生难忘！<br/>这个五一，趁着武功山最美的季节，与突围的小伙伴约定一场身体在地狱，灵魂在天堂的旅行吧！
-                            </div>
+                            <div id="activity-desc"  class="tab-panel in">{{act.content}}</div>
     						<div id="activitor-desc" class="tab-panel">
     							Janson
     						</div>
@@ -90,16 +97,31 @@
     								<span class="form-title">昵称</span>
                                     <input type="text" class="form-field" name="nickname" value="{{form.nickname.data}}" id="nickname" placeholder="为空则为真实姓名"/>
     							</li>
+                                
+                                {% set fields = act.extras %}
+                                {% for field in fields %}
+
+                                {% if field["type"] == "string" %}
     							<li>
-    								<span class="form-title">身份证</span>
-                                    <input type="text" class="form-field" name="identify" value="{{form.identify.data}}" id="identify" placeholder="曾经填写过可不再填"/>
+                                    <span class="form-title">{{field['name']}}</span>
+                                    <input type="text" class="form-field" name="{{field['input_name']}}" value="" id="id_{{field['input_name']}}" placeholder="{{field['holder']}}"/>
     							</li>
+                                {% else %}
+    							<li>
+                                    <span class="form-title">{{field['name']}}</span>
+                                    <select name="cars" class="form-field" name="{{field['input_name']}}" id="id_{{field['input_name']}}" placeholder="{{field['holder']}}">
+                                    {% for op in field["options"] %}
+                                    <option value="{{op}}">{{op}}</option>
+                                    {% end %}
+                                    </select>
+    							</li>
+                                {% end %}
+                                {% end %}
     						</ul>
 
                             {{ field_errors(form.mobile) }}
                             {{ field_errors(form.realname) }}
                             {{ field_errors(form.nickname) }}
-                            {{ field_errors(form.identify) }}
                             {{ field_errors(form.code) }}
                             {{ field_errors(form.submit) }}
                             <input type="submit" class="btn-submit" name="register" value="确认报名"/>
@@ -116,7 +138,7 @@
 
                         <img src="/static/zz/img/bg.png" alt="活动海报" class="poster-success">
 
-                        <p class="activity-desc">#远行# 风景再美 也不如你的陪伴 | 五一轻装醉美武功山</p>
+                        <p class="activity-desc">{{act.title}}</p>
                     </div>  
 
                     <div class="inner-panel" style="background: inherit;  width: 97%;">
@@ -124,7 +146,7 @@
                             <ul class="form-lines">
                                 <li style="margin: 0; border-bottom:1px solid #ddd">
                                     <div>
-                                        <span class="title">已报名小伙伴</span> <span class="title-desc">56人报名</span><span class="right up"></span>
+                                        <span class="title">已报名小伙伴</span> <span class="title-desc">6人报名</span><span class="right up"></span>
                                     </div>
                                 </li>
                             </ul>
