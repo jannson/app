@@ -4619,3 +4619,205 @@ header .menuButton:after {
 .win8 input[type="checkbox"]:not(.toggle):checked + label:before {
   background: #00aba9;
 }
+
+
+
+
+
+
+
+/*common*/
+.panel-pad {
+    padding: 8px 10px;    
+}
+
+.text-center {
+    text-align: center;
+}
+
+body {
+      font-family: '华文细黑' !important;
+  font-size: 16px;
+}
+
+#poster >.desc {
+  position: absolute;
+  bottom: 0;
+
+  font-size: 18px;
+  color: white;
+  padding: 10px 15px;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.panel {
+  padding: 0;
+}
+
+.content {
+  background-color: #ebebeb;
+}
+
+.sub-title {
+    padding: 10px 15px;
+    margin: 0; 
+}
+.inner-panel {
+  margin: 10px;
+  background-color: #fff;
+}
+
+.tab-content {
+    clear: both;
+    padding: 10px;
+}
+/*tab*/
+.tab {
+    list-style: none;
+    border-top: 1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4;
+    overflow: hidden;
+}
+.tab > li {
+    float: left;
+    padding: 10px;
+    font-weight: 600;
+}
+.tab > li > a {
+    text-decoration: none;
+    color: #000;
+}
+
+.tab > .active {
+    background-color: #21c876;
+    color: #fff;
+}
+
+.tab > .active > a {
+    color: #fff;
+}
+
+.tab-panel {
+    display: none;
+    font-size:0.95em;
+}
+
+.tab-panel.in {
+    display: block;
+}
+
+/*link*/
+.link-title {
+    padding: 3px 5px;
+    background-color: #305da7;
+    color:#fff;
+}
+
+.link-title:after {
+    right: -12px;
+    border-width: 12px 6px;
+}
+
+.link {
+    text-decoration: none;
+    color: #305da7;
+    line-height: 1.5em;
+}
+
+.title {
+    padding: 10px;
+    background: #21c876;
+    color: #fff;
+    display: inline-block;
+}
+
+.title-desc {
+    font-size: 0.9em;
+    color: #c0c0c0;
+}
+
+.form-lines > li {
+    margin-bottom: 5px;
+    background: #fff;
+    display: inline-table;
+    width: 100%;
+    overflow: hidden;
+}
+
+.form-lines .form-title {
+    width: 20%;
+    padding-right: 10px;
+    text-align: right;
+    display: inline-block;
+}
+
+.form-lines .form-field {
+    width: 78%;
+    margin: 5px 0;
+    display: inline-block;
+}
+
+.btn-send {
+    display: inline-block;
+    width: 22%;
+    line-height: 2em;
+}
+
+.btn-submit {
+    padding: 10px;
+    width: 80%;
+    margin: 5px 10%;
+    color: #fff;
+    background: #21c176;
+    border: 0;
+}
+
+/**success page **/
+.poster-success {
+    width: 100%;
+    margin-top: 15px;
+}
+
+#signup-success .inner-panel{
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    display: inline-block;
+}
+
+.activity-desc {
+    font-size: 1.6em;
+    line-height: 1.5em;
+}
+
+.right {
+    display: inline-block;
+    float: right;
+    width: 38px;
+    height: 38px;
+}
+.up {
+    background: url('../img/icon-down.png') no-repeat 0;
+    background-size: 26px;
+}
+
+.image {
+    width:43px; 
+    height:43px; 
+    border-radius:50px;
+    float: left;
+}
+
+.row {
+    background: #fff;
+    overflow: hidden;
+}
+
+.col-md-4 {
+    padding: 10px 20px;
+    width: 33.333%;
+}
+
+.person-item {
+    list-style: none;
+    min-width: 100px;
+}
