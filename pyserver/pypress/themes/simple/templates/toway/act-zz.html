@@ -304,7 +304,7 @@ body {
                                     <span class="form-title">{{field['name']}}</span>
                                     <input type="text" class="form-field" name="{{field['input_name']}}" value="" id="id_{{field['input_name']}}" placeholder="{{field['holder']}}"/>
     							</li>
-                                {% elif %}
+                                {% elif field["type"] == "date" %}
     							<li>
                                     <span class="form-title">{{field['name']}}</span>
                                     <input type="date" class="form-field" name="{{field['input_name']}}" value="" id="id_{{field['input_name']}}"/>

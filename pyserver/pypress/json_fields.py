@@ -37,5 +37,13 @@ def create_basketball():
     items.append(create_item("options", u"球场位置", u"ball_position", options=[u"得分后卫", u"组织后卫", u"小前锋", u"大前锋", u"中锋", u"啦啦队"]))
     print json.dumps(items)
 
+def create_xia():
+    items = []
+    items.append(create_item("string", u"微信号", u"weixinname"))
+    items.append(create_item("date", u"出生年月", u"birthdate"))
+    print json.dumps(items)
+
+
 if __name__ == "__main__":
-    create_basketball()
+    #create_basketball()
+    create_xia()
